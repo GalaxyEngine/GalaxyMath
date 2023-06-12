@@ -418,4 +418,4 @@ namespace GALAXY::Math
 
 }
 
-#include "Math.inl"
+#include "Maths.inl"
