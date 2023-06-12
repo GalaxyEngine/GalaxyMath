@@ -1,16 +1,10 @@
 #include <string>
 
 // to string function
-#include <iostream>
-#include <iomanip>
-#include <sstream>
-#include <cmath>
-#include <cfloat>
-#include <algorithm>
 
 #include "Math.h"
 
-namespace Math {
+namespace GALAXY::Math {
 
 #pragma region Vec2
 
@@ -388,7 +382,7 @@ namespace Math {
 	}
 
 	template<typename T>
-	Quat Math::Vec3<T>::ToQuaternion() const
+	Quat Vec3<T>::ToQuaternion() const
 	{
 		float halfToRad = 0.5f * DegToRad;  // Convert degrees to radians
 

@@ -1,13 +1,18 @@
 #pragma once
 #include <iostream>
 #include <string>
+#include <iomanip>
+#include <sstream>
+#include <cmath>
+#include <cfloat>
+#include <algorithm>
 
 #define PI 3.14159265358979323846264f
 #define DegToRad 1/180.f * PI
 #define RadToDeg 180.f / PI
 #define VECTOR2
 
-namespace Math
+namespace GALAXY::Math
 {
 
 	template<typename T>
