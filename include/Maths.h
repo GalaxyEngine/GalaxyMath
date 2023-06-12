@@ -1,5 +1,4 @@
 #pragma once
-#pragma comment(lib, "msvcrt.lib")
 #include <iostream>
 #include <string>
 #include <iomanip>
