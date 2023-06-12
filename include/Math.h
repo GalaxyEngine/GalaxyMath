@@ -1,4 +1,5 @@
 #pragma once
+#pragma comment(lib, "msvcrt.lib")
 #include <iostream>
 #include <string>
 #include <iomanip>
@@ -6,7 +7,6 @@
 #include <cmath>
 #include <cfloat>
 #include <algorithm>
-
 #define PI 3.14159265358979323846264f
 #define DegToRad 1/180.f * PI
 #define RadToDeg 180.f / PI
