@@ -4,9 +4,18 @@
 #define DegToRad 1/180.f * PI
 #define RadToDeg 180.f / PI
 
+#ifdef MATH_GLM_EXTENSION
+#include <glm/glm.hpp>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/norm.hpp> 
+#endif
+
 namespace GALAXY::Math
 {
-	inline bool Approximately(float a, float b, float diff);
+	template<typename T>
+	inline bool AlmostEqual(T a, T b, float diff = 1e-5f);
 
 	template<typename T>
 	class Vec3;
@@ -21,19 +30,19 @@ namespace GALAXY::Math
 	public:
 		T x = 0, y = 0;
 
-		Vec2() : x(0), y(0) {}
+		inline Vec2() : x(0), y(0) {}
 
-		explicit Vec2(T _xy) : x(_xy), y(_xy) {}
+		explicit inline Vec2(T _xy) : x(_xy), y(_xy) {}
 
-		Vec2(T _x, T _y) : x(_x), y(_y) {}
-
-		template<typename U>
-		Vec2(const Vec3<U>& a);
+		inline Vec2(T _x, T _y) : x(_x), y(_y) {}
 
 		template<typename U>
-		Vec2(const Vec2<U>& a);
+		inline Vec2(const Vec3<U>& a);
 
-		Vec2(const std::string& str);
+		template<typename U>
+		inline Vec2(const Vec2<U>& a);
+
+		inline Vec2(const std::string& str);
 
 		template<typename U>
 		inline Vec2 operator=(const Vec2<U>& a);
@@ -80,9 +89,9 @@ namespace GALAXY::Math
 
 		inline T Dot(const Vec2& a) const;
 
-		inline T Cross(const Vec2& a) const;
+		inline Vec2 Cross(const Vec2& a) const;
 
-		inline Vec2 Ortho(const Vec2& a) const;
+		inline Vec2 Ortho() const;
 
 		inline void Normalize();
 
@@ -92,11 +101,17 @@ namespace GALAXY::Math
 
 		inline std::string ToString(int precision = 6) const;
 
-		inline Vec2<float> ToFloat() const;
+		inline Vec2<float> ToVec2f() const;
 
-		inline Vec2<int> ToInt() const;
+		inline Vec2<int> ToVec2i() const;
 
 		inline T* Data() const;
+
+#ifdef MATH_GLM_EXTENSION
+		inline glm::vec2 ToGlm() const { return glm::vec2(x, y); }
+
+		inline bool operator==(const glm::vec2& b) const { return x == b.x && y == b.y; }
+#endif
 	};
 
 	typedef Vec2<float> Vec2f;
@@ -109,27 +124,28 @@ namespace GALAXY::Math
 	public:
 		T x = 0, y = 0, z = 0;
 
-		Vec3() : x(0), y(0), z(0) {}
+		inline Vec3() : x(0), y(0), z(0) {}
 
-		Vec3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
+		inline Vec3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
 
-		explicit Vec3(T xyz) : x(xyz), y(xyz), z(xyz) {}
+		explicit inline Vec3(T xyz) : x(xyz), y(xyz), z(xyz) {}
 
-		Vec3(const std::string& str);
-
-		template<typename U>
-		Vec3(const Vec2<U>& xy, T _z = 0);
+		inline Vec3(const std::string& str);
 
 		template<typename U>
-		Vec3(const Vec3<U>& a);
+		inline Vec3(const Vec2<U>& xy, T _z = 0);
 
 		template<typename U>
-		Vec3(const Vec4<U>& a);
+		inline Vec3(const Vec3<U>& a);
+
+		template<typename U>
+		inline Vec3(const Vec4<U>& a);
 
 		inline Vec3 operator+(const Vec3& b) const;
 		inline Vec3 operator-(const Vec3& b) const;
 		inline Vec3 operator-(void) const;
-		inline Vec3 operator*(const Vec3& b) const;
+		template<typename U>
+		inline Vec3 operator*(const Vec3<U>& b) const;
 		template<typename U>
 		inline Vec3 operator*(const U& b) const;
 		template<typename U>
@@ -143,8 +159,10 @@ namespace GALAXY::Math
 		template<typename U>
 		inline void operator/=(const U& b);
 
-		inline bool operator==(const Vec3& b) const;
-		inline bool operator!=(const Vec3& b) const;
+		template<typename U>
+		inline bool operator==(const Vec3<U>& b) const;
+		template<typename U>
+		inline bool operator!=(const Vec3<U>& b) const;
 
 		inline T& operator[](const size_t a);
 		inline const T& operator[](const size_t a) const;
@@ -183,6 +201,12 @@ namespace GALAXY::Math
 		inline Quat ToQuaternion() const;
 
 		inline T* Data() const;
+
+#ifdef MATH_GLM_EXTENSION
+		inline glm::vec3 ToGlm() const { return glm::vec3(x, y, z); }
+
+		inline bool operator==(const glm::vec3& b) const { return AlmostEqual(x, b.x) && AlmostEqual(y, b.y) && AlmostEqual(z, b.z); }
+#endif
 	};
 
 	typedef Vec3<float> Vec3f;
@@ -452,6 +476,7 @@ namespace GALAXY::Math
 	};
 
 }
+
 using namespace GALAXY::Math;
 #define IMGUI_IMPLEMENTATION
 #ifdef IMGUI_IMPLEMENTATION

@@ -4,15 +4,27 @@
 #include <cmath>
 #include <cfloat>
 #include <algorithm>
+#include <type_traits>
 
 #include "Maths.h"
 
 namespace GALAXY::Math {
 #pragma region Math Functions
-	inline bool Approximately(float a, float b, float diff) {
-		float absoluteDiff = std::abs(a - b);
+
+	template<typename T>
+	bool AlmostEqual(T a, T b, float diff /*= 1e-5f*/)
+	{
+		T absoluteDiff = std::abs(a - b);
 		return absoluteDiff <= diff;
 	}
+
+	template<>
+	bool AlmostEqual(int a, int b, float diff /*= 1e-5f*/)
+	{
+		return a == b;
+	}
+
+
 #pragma endregion
 
 #pragma region Vec2
@@ -26,7 +38,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec2<T>::Vec2(const Vec3<U>& a)
+	inline Vec2<T>::Vec2(const Vec3<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -59,21 +71,21 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator+(const Vec2<U>& a) const
+	inline Vec2<T> Vec2<T>::operator+(const Vec2<U>& a) const
 	{
 		return { static_cast<T>(x + a.x), static_cast<T>(y + a.y) };
 	}
 
 	template<typename T>
 	template<typename U>
-	void Vec2<T>::operator+=(const Vec2<U>& a)
+	inline void Vec2<T>::operator+=(const Vec2<U>& a)
 	{
 		*this = operator+(a);
 	}
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator-(const Vec2<U>& a) const
+	inline Vec2<T> Vec2<T>::operator-(const Vec2<U>& a) const
 	{
 		return { static_cast<T>(x - a.x), static_cast<T>(y - a.y) };
 	}
@@ -86,21 +98,21 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	Vec2<T> Vec2<T>::operator-(void) const
+	inline Vec2<T> Vec2<T>::operator-(void) const
 	{
 		return { -x, -y };
 	}
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator*(const U& a) const
+	inline Vec2<T> Vec2<T>::operator*(const U& a) const
 	{
 		return { static_cast<T>(x * a), static_cast<T>(y * a) };
 	}
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator*(const Vec2<U>& a) const
+	inline Vec2<T> Vec2<T>::operator*(const Vec2<U>& a) const
 	{
 		return { static_cast<T>(x * a.x), static_cast<T>(y * a.y)};
 	}
@@ -121,63 +133,66 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator/(const U& a) const
+	inline Vec2<T> Vec2<T>::operator/(const U& a) const
 	{
 		return { x / a, y / a };
 	}
 
 	template<typename T>
 	template<typename U>
-	void Vec2<T>::operator/=(const U& a)
+	inline void Vec2<T>::operator/=(const U& a)
 	{
 		*this = operator/(a);
 	}
 
 	template<typename T>
 	template<typename U>
-	bool Vec2<T>::operator==(const Vec2<U>& a) const
+	inline bool Vec2<T>::operator==(const Vec2<U>& a) const
 	{
-		return x == static_cast<T>(a.x) && y == static_cast<T>(a.y);
+		// "this" vector has the authority for the type comparison
+		return AlmostEqual(x, static_cast<T>(a.x)) && AlmostEqual(y, static_cast<T>(a.y));
 	}
 
 	template<typename T>
 	template<typename U>
 	inline bool Vec2<T>::operator==(const Vec3<U>& b) const
 	{
-		return x == static_cast<T>(b.x) && y == static_cast<T>(b.y);
+		// "this" vector has the authority for the type comparison
+		return AlmostEqual(x, static_cast<T>(b.x)) && AlmostEqual(y, static_cast<T>(b.y));
 	}
 
 	template<typename T>
 	template<typename U>
 	bool Vec2<T>::operator!=(const Vec2<U>& a) const
 	{
-		return x != a.x || y != a.y;
+		// "this" vector has the authority for the type comparison
+		return !AlmostEqual(x, static_cast<T>(a.x)) || !AlmostEqual(y, static_cast<T>(a.y));
 	}
 
 	template<typename T>
 	template<typename U>
 	inline bool Vec2<T>::operator!=(const Vec3<U>& b) const
 	{
-		return x != b.x || y != b.y;
+		return !AlmostEqual(x, static_cast<T>(b.x)) || !AlmostEqual(y, static_cast<T>(b.y));
 	}
 
 	template<typename T>
-	T& Vec2<T>::operator[](const size_t a)
+	inline T& Vec2<T>::operator[](const size_t a)
 	{
 		if (a >= 2)
-			// Return first if not valid index
-			return *((&x));
+			// Return first value of the vector if not valid index
+			return this->x;
 		return *((&x) + a);
 	}
 
 	template<typename T>
-	T Vec2<T>::LengthSquared() const
+	inline T Vec2<T>::LengthSquared() const
 	{
 		return x * x + y * y;
 	}
 
 	template<typename T>
-	T Vec2<T>::Length() const
+	inline T Vec2<T>::Length() const
 	{
 		return static_cast<T>(std::sqrt(LengthSquared()));
 	}
@@ -189,13 +204,13 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline T Vec2<T>::Cross(const Vec2& a) const
+	inline Vec2<T> Vec2<T>::Cross(const Vec2& a) const
 	{
-		return x * a.y - y * a.x;
+		return { x * a.y, y * a.x };
 	}
 
 	template<typename T>
-	inline Vec2<T> Vec2<T>::Ortho(const Vec2& a) const
+	inline Vec2<T> Vec2<T>::Ortho() const
 	{
 		return { -y, x };
 	}
@@ -207,7 +222,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	Vec2<T> Math::Vec2<T>::GetNormalize() const
+	inline Vec2<T> Math::Vec2<T>::GetNormalize() const
 	{
 		T len = Length();
 		if (len != 0)
@@ -216,14 +231,14 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	void Vec2<T>::Print(int precision /*= 6*/) const
+	inline void Vec2<T>::Print(int precision /*= 6*/) const
 	{
 		std::cout << std::fixed << std::setprecision(precision);
 		std::cout << x << ", " << y << std::endl;
 	}
 
 	template<typename T>
-	std::string Vec2<T>::ToString(int precision /*= 6*/) const
+	inline std::string Vec2<T>::ToString(int precision /*= 6*/) const
 	{
 		std::ostringstream oss;
 		oss << std::fixed << std::setprecision(precision);
@@ -234,19 +249,19 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	Vec2<float> Vec2<T>::ToFloat() const
+	inline Vec2<float> Vec2<T>::ToVec2f() const
 	{
 		return Vec2f{ static_cast<float>(x), static_cast<float>(y) };
 	}
 
 	template<typename T>
-	Vec2<int> Vec2<T>::ToInt() const
+	inline Vec2<int> Vec2<T>::ToVec2i() const
 	{
 		return Vec2i{ static_cast<int>(x), static_cast<int>(y) };
 	}
 
 	template<typename T>
-	T* Vec2<T>::Data() const
+	inline T* Vec2<T>::Data() const
 	{
 		return const_cast<T*>(reinterpret_cast<const T*>(this));
 	}
@@ -266,7 +281,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec3<T>::Vec3(const Vec2<U>& xy, T _z)
+	inline Vec3<T>::Vec3(const Vec2<U>& xy, T _z)
 	{
 		x = static_cast<T>(xy.x);
 		y = static_cast<T>(xy.y);
@@ -275,7 +290,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec3<T>::Vec3(const Vec3<U>& a)
+	inline Vec3<T>::Vec3(const Vec3<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -284,7 +299,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec3<T>::Vec3(const Vec4<U>& a)
+	inline Vec3<T>::Vec3(const Vec4<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -293,9 +308,9 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec3<T> Vec3<T>::operator*(const U& b) const
+	inline Vec3<T> Vec3<T>::operator*(const U& b) const
 	{
-		return { x * b, y * b, z * b };
+		return { static_cast<T>(x * b), static_cast<T>(y * b), static_cast<T>(z * b) };
 	}
 
 	template<typename T>
@@ -320,97 +335,102 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	Vec3<T> Vec3<T>::operator+(const Vec3& b) const
+	inline Vec3<T> Vec3<T>::operator+(const Vec3& b) const
 	{
 		return { x + b.x, y + b.y, z + b.z };
 	}
 
 	template<typename T>
-	void Vec3<T>::operator+=(const Vec3& b)
+	inline void Vec3<T>::operator+=(const Vec3& b)
 	{
 		*this = operator+(b);
 	}
 
 	template<typename T>
-	Vec3<T> Vec3<T>::operator-(const Vec3& b) const
+	inline Vec3<T> Vec3<T>::operator-(const Vec3& b) const
 	{
 		return { x - b.x, y - b.y, z - b.z };
 	}
 
 	template<typename T>
-	Vec3<T> Vec3<T>::operator-(void) const
+	inline Vec3<T> Vec3<T>::operator-(void) const
 	{
 		return { -x, -y, -z };
 	}
 
 	template<typename T>
-	void Vec3<T>::operator-=(const Vec3& b)
+	inline void Vec3<T>::operator-=(const Vec3& b)
 	{
 		*this = operator-(b);
 	}
 
 	template<typename T>
-	Vec3<T> Vec3<T>::operator*(const Vec3& b) const
+	template<typename U>
+	inline Vec3<T> Vec3<T>::operator*(const Vec3<U>& b) const
 	{
-		return { x * b.x, y * b.y, z * b.z };
+		return { static_cast<T>(x * b.x), static_cast<T>(y * b.y), static_cast<T>(z * b.z) };
 	}
 
 	template<typename T>
-	void Vec3<T>::operator*=(const Vec3& b)
+	inline void Vec3<T>::operator*=(const Vec3& b)
 	{
 		*this = operator*(b);
 	}
 
 	template<typename T>
-	bool Vec3<T>::operator==(const Vec3& a) const
+	template<typename U>
+	inline bool Vec3<T>::operator==(const Vec3<U>& a) const
 	{
-		return x == a.x && y == a.y && z == a.z;
+		return AlmostEqual(x, static_cast<T>(a.x)) && AlmostEqual(y, static_cast<T>(a.y)) && AlmostEqual(z, static_cast<T>(a.z));
 	}
 
 	template<typename T>
-	bool Vec3<T>::operator!=(const Vec3& a) const
+	template<typename U>
+	inline bool Vec3<T>::operator!=(const Vec3<U>& a) const
 	{
-		return x != a.x || y != a.y || z != a.z;
+		return !AlmostEqual(x, static_cast<T>(a.x)) || !AlmostEqual(y, static_cast<T>(a.y)) || !AlmostEqual(z, static_cast<T>(a.z));
 	}
 
 	template<typename T>
-	T& Vec3<T>::operator[](const size_t a)
+	inline T& Vec3<T>::operator[](const size_t a)
+	{
+		if (a >= 3)
+			return x;
+		return *((&x) + a);
+	}
+
+	template<typename T>
+	inline const T& Vec3<T>::operator[](const size_t a) const
 	{
 		return *((&x) + a);
 	}
 
 	template<typename T>
-	const T& Vec3<T>::operator[](const size_t a) const
-	{
-		return *((&x) + a);
-	}
-
-	template<typename T>
-	T Vec3<T>::LengthSquared() const
+	inline T Vec3<T>::LengthSquared() const
 	{
 		return x * x + y * y + z * z;
 	}
 
 	template<typename T>
-	T Vec3<T>::Length() const
+	inline T Vec3<T>::Length() const
 	{
 		return std::sqrt(LengthSquared());
 	}
 
 	template<typename T>
-	T Vec3<T>::Dot(const Vec3& a) const
+	inline T Vec3<T>::Dot(const Vec3& a) const
 	{
 		return x * a.x + y * a.y + z * a.z;
 	}
 
 	template<typename T>
-	Vec3<T> Vec3<T>::Cross(const Vec3& a) const
+	inline Vec3<T> Vec3<T>::Cross(const Vec3& a) const
 	{
 		return { (y * a.z) - (z * a.y), (z * a.x) - (x * a.z), (x * a.y) - (y * a.x) };
 	}
 
 	template<typename T>
-	Vec3<T> Vec3<T>::GetNormalize() const
+	inline Vec3<T> Vec3<T>::GetNormalize() const
 	{
 		T len = Length();
 		if (len != 0)
@@ -419,13 +439,13 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	void Vec3<T>::Normalize()
+	inline void Vec3<T>::Normalize()
 	{
 		*this = GetNormalize();
 	}
 
 	template<typename T>
-	T Vec3<T>::Distance(const Vec3& a) const
+	inline T Vec3<T>::Distance(const Vec3& a) const
 	{
 		T i = a.x - x;
 		T j = a.y - y;
@@ -434,7 +454,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	Vec3<T> Vec3<T>::Lerp(const Vec3& b, float t) const
+	inline Vec3<T> Vec3<T>::Lerp(const Vec3& b, float t) const
 	{
 		if (t < 0)
 			return *this;
@@ -444,14 +464,14 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	void Vec3<T>::Print(int precision /*= 6*/) const
+	inline void Vec3<T>::Print(int precision /*= 6*/) const
 	{
 		std::cout << std::fixed << std::setprecision(precision);
 		std::cout << x << ", " << y << ", " << z << std::endl;
 	}
 
 	template<typename T>
-	std::string Vec3<T>::ToString(int precision /*= 6*/) const
+	inline std::string Vec3<T>::ToString(int precision /*= 6*/) const
 	{
 		std::ostringstream oss;
 		oss << std::fixed << std::setprecision(precision);
@@ -460,7 +480,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	Quat Vec3<T>::ToQuaternion() const
+	inline Quat Vec3<T>::ToQuaternion() const
 	{
 		float halfToRad = 0.5f * DegToRad;  // Convert degrees to radians
 
@@ -486,7 +506,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	T* Vec3<T>::Data() const
+	inline T* Vec3<T>::Data() const
 	{
 		return const_cast<T*>(reinterpret_cast<const T*>(this));
 	}
