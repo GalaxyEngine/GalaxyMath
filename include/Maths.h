@@ -1,18 +1,12 @@
 #pragma once
-#include <iostream>
 #include <string>
-#include <iomanip>
-#include <sstream>
-#include <cmath>
-#include <cfloat>
-#include <algorithm>
 #define PI 3.14159265358979323846264f
 #define DegToRad 1/180.f * PI
 #define RadToDeg 180.f / PI
-#define VECTOR2
 
 namespace GALAXY::Math
 {
+	inline bool Approximately(float a, float b, float diff);
 
 	template<typename T>
 	class Vec3;
@@ -29,7 +23,7 @@ namespace GALAXY::Math
 
 		Vec2() : x(0), y(0) {}
 
-		Vec2(T _xy) : x(_xy), y(_xy) {}
+		explicit Vec2(T _xy) : x(_xy), y(_xy) {}
 
 		Vec2(T _x, T _y) : x(_x), y(_y) {}
 
@@ -39,29 +33,44 @@ namespace GALAXY::Math
 		template<typename U>
 		Vec2(const Vec2<U>& a);
 
+		Vec2(const std::string& str);
+
 		template<typename U>
 		inline Vec2 operator=(const Vec2<U>& a);
-
-		inline Vec2 operator+(const Vec2& a) const;
-		inline Vec2 operator-(const Vec2& a) const;
-		inline Vec2 operator-(void) const;
 		template<typename U>
-		inline Vec2 operator*(const Vec2<U>& a) const;
+		inline Vec2 operator=(const Vec3<U>& a);
+
+		template<typename U>
+		inline Vec2 operator+(const Vec2<U>& a) const;
+		template<typename U>
+		inline Vec2 operator-(const Vec2<U>& a) const;
+		inline Vec2 operator-(void) const;
 		template<typename U>
 		inline Vec2 operator*(const U& a) const;
 		template<typename U>
+		inline Vec2 operator*(const Vec2<U>& a) const;
+		template<typename U>
 		inline Vec2 operator/(const U& a) const;
 
-		inline void operator+=(const Vec2& a);
-		inline void operator-=(const Vec2& a);
-		inline void operator*=(const Vec2& a);
+		template<typename U>
+		inline void operator+=(const Vec2<U>& a);
+		template<typename U>
+		inline void operator-=(const Vec2<U>& a);
+		template<typename U>
+		inline void operator*=(const Vec2<U>& a);
 		template<typename U>
 		inline void operator*=(const U& a);
 		template<typename U>
-		inline Vec2 operator/=(const U& a);
+		inline void operator/=(const U& a);
 
-		inline bool operator==(const Vec2& b) const;
-		inline bool operator!=(const Vec2& b) const;
+		template<typename U>
+		inline bool operator==(const Vec2<U>& b) const;
+		template<typename U>
+		inline bool operator==(const Vec3<U>& b) const;
+		template<typename U>
+		inline bool operator!=(const Vec2<U>& b) const;
+		template<typename U>
+		inline bool operator!=(const Vec3<U>& b) const;
 
 		inline T& operator[](const size_t a);
 
@@ -82,11 +91,17 @@ namespace GALAXY::Math
 		inline void Print(int precision = 6) const;
 
 		inline std::string ToString(int precision = 6) const;
+
+		inline Vec2<float> ToFloat() const;
+
+		inline Vec2<int> ToInt() const;
+
+		inline T* Data() const;
 	};
 
 	typedef Vec2<float> Vec2f;
-	typedef Vec2<int> Vec2i;
 	typedef Vec2<double> Vec2d;
+	typedef Vec2<int> Vec2i;
 
 	template<typename T>
 	class Vec3
@@ -99,6 +114,8 @@ namespace GALAXY::Math
 		Vec3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
 
 		explicit Vec3(T xyz) : x(xyz), y(xyz), z(xyz) {}
+
+		Vec3(const std::string& str);
 
 		template<typename U>
 		Vec3(const Vec2<U>& xy, T _z = 0);
@@ -134,11 +151,11 @@ namespace GALAXY::Math
 
 		static inline Vec3 Right() { return { 1, 0, 0 }; }
 		static inline Vec3 Up() { return { 0, 1, 0 }; }
-		static inline Vec3 Forward() { return { 0, 0, 1 }; }
+		static inline Vec3 Forward() { return { 0, 0, -1 }; }
 
 		static inline Vec3 Left() { return { -1, 0, 0 }; }
 		static inline Vec3 Down() { return { 0, -1, 0 }; }
-		static inline Vec3 Back() { return { 0, 0, -1 }; }
+		static inline Vec3 Back() { return { 0, 0, 1 }; }
 
 		static inline Vec3 Zero() { return { 0, 0, 0 }; }
 		static inline Vec3 One() { return { 1, 1, 1 }; }
@@ -149,7 +166,7 @@ namespace GALAXY::Math
 
 		inline T Dot(const Vec3& a) const;
 
-		inline T Cross(const Vec3& a) const;
+		inline Vec3 Cross(const Vec3& a) const;
 
 		inline T Distance(const Vec3& a) const;
 
@@ -164,6 +181,8 @@ namespace GALAXY::Math
 		inline std::string ToString(int precision = 6) const;
 
 		inline Quat ToQuaternion() const;
+
+		inline T* Data() const;
 	};
 
 	typedef Vec3<float> Vec3f;
@@ -181,6 +200,8 @@ namespace GALAXY::Math
 		Vec4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
 
 		explicit Vec4(T xyzw) : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
+
+		Vec4(const std::string& str);
 
 		template<typename U>
 		Vec4(const Vec2<U>& xy, T _z = 0, T _w = 0);
@@ -212,6 +233,13 @@ namespace GALAXY::Math
 		inline bool operator!=(const Vec4& b) const;
 
 		inline T& operator[](const size_t a);
+		inline const T& operator[](const size_t a) const;
+
+		friend inline std::ostream& operator<<(std::ostream& os, const Vec4<T>& vec)
+		{
+			os << vec.x << " " << vec.y << " " << vec.z << " " << vec.w;
+			return os;
+		}
 
 		static inline Vec4 Right() { return { 1, 0, 0, 0 }; }
 		static inline Vec4 Up() { return { 0, 1, 0, 0 }; }
@@ -246,6 +274,8 @@ namespace GALAXY::Math
 		inline Vec3<T> ToVector3() const;
 
 		inline std::string ToString(int precision = 6) const;
+
+		T* Data() const;
 	};
 
 
@@ -291,6 +321,8 @@ namespace GALAXY::Math
 		inline float* operator[](const size_t a);
 
 		static Mat4 Identity() { return { 1.f }; }
+
+		static inline Mat4 CreateProjectionMatrix(float _fov, float _aspect, float _near, float _far);
 
 		template<typename U>
 		static inline Mat4 CreateTranslationMatrix(const Vec3<U>& translation);
@@ -341,6 +373,8 @@ namespace GALAXY::Math
 		// Transforms a direction by this matrix.
 		template<typename U>
 		inline Vec3<U> MultiplyVector(Vec3<U> vector);		
+
+		inline float* Data() const;
 	};
 
 	class Quat
@@ -356,6 +390,8 @@ namespace GALAXY::Math
 		Quat(float a) : x(a), y(a), z(a), w(a) {}
 
 		Quat(float a, float b, float c, float d = 1) : x(a), y(b), z(c), w(d) {}
+
+		Quat(const std::string& str);
 
 		template<typename U>
 		Quat(const Vec3<U>& a) : x(a.x), y(a.y), z(a.z), w(1.f) {}
@@ -412,9 +448,20 @@ namespace GALAXY::Math
 
 		inline void Print() const;
 
-		inline std::string ToString() const;
+		inline std::string ToString(int precision = 6) const;
 	};
 
 }
+using namespace GALAXY::Math;
+#define IMGUI_IMPLEMENTATION
+#ifdef IMGUI_IMPLEMENTATION
+#define IM_VEC2_CLASS_EXTRA                                                     \
+        constexpr ImVec2(const Math::Vec2f& f) : x(f.x), y(f.y) {}                   \
+        operator Math::Vec2f() const { return Math::Vec2f(x,y); }
+
+#define IM_VEC4_CLASS_EXTRA                                                     \
+        constexpr ImVec4(const Math::Vec4f& f) : x(f.x), y(f.y), z(f.z), w(f.w) {}   \
+        operator Math::Vec4f() const { return Math::Vec4f(x,y,z,w); }
+#endif
 
 #include "Maths.inl"

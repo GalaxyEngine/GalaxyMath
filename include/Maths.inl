@@ -1,13 +1,21 @@
-#include <string>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <cmath>
+#include <cfloat>
+#include <algorithm>
 
-// to string function
-
-#include "Math.h"
+#include "Maths.h"
 
 namespace GALAXY::Math {
+#pragma region Math Functions
+	inline bool Approximately(float a, float b, float diff) {
+		float absoluteDiff = std::abs(a - b);
+		return absoluteDiff <= diff;
+	}
+#pragma endregion
 
 #pragma region Vec2
-
 	template<typename T>
 	template<typename U>
 	inline Vec2<T>::Vec2(const Vec2<U>& a)
@@ -25,32 +33,54 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
+	inline Vec2<T>::Vec2(const std::string& str)
+	{
+		std::istringstream ss(str);
+
+		char discard;
+		ss >> this->x >> discard >> this->y;
+	}
+
+	template<typename T>
 	template<typename U>
 	inline Vec2<T> Vec2<T>::operator=(const Vec2<U>& a)
 	{
-		return { static_cast<T>(a.x), static_cast<T>(a.y) };
+		x = static_cast<T>(a.x);
+		y = static_cast<T>(a.y);
+		return *this;
 	}
 
 	template<typename T>
-	Vec2<T> Vec2<T>::operator+(const Vec2& a) const
+	template<typename U>
+	inline Vec2<T> Vec2<T>::operator=(const Vec3<U>& a)
 	{
-		return { x + a.x, y + a.y };
+		return Vec2(a);
 	}
 
 	template<typename T>
-	void Vec2<T>::operator+=(const Vec2& a)
+	template<typename U>
+	Vec2<T> Vec2<T>::operator+(const Vec2<U>& a) const
+	{
+		return { static_cast<T>(x + a.x), static_cast<T>(y + a.y) };
+	}
+
+	template<typename T>
+	template<typename U>
+	void Vec2<T>::operator+=(const Vec2<U>& a)
 	{
 		*this = operator+(a);
 	}
 
 	template<typename T>
-	Vec2<T> Vec2<T>::operator-(const Vec2& a) const
+	template<typename U>
+	Vec2<T> Vec2<T>::operator-(const Vec2<U>& a) const
 	{
-		return { x - a.x, y - a.y };
+		return { static_cast<T>(x - a.x), static_cast<T>(y - a.y) };
 	}
 
 	template<typename T>
-	inline void Vec2<T>::operator-=(const Vec2& a)
+	template<typename U>
+	inline void Vec2<T>::operator-=(const Vec2<U>& a)
 	{
 		*this = operator-(a);
 	}
@@ -63,22 +93,23 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator*(const Vec2<U>& a) const
+	Vec2<T> Vec2<T>::operator*(const U& a) const
 	{
-		return { x * a.x, y * a.y };
-	}
-
-	template<typename T>
-	inline void Vec2<T>::operator*=(const Vec2& a)
-	{
-		*this = operator*(a);
+		return { static_cast<T>(x * a), static_cast<T>(y * a) };
 	}
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator*(const U& a) const
+	Vec2<T> Vec2<T>::operator*(const Vec2<U>& a) const
 	{
-		return { x * a, y * a };
+		return { static_cast<T>(x * a.x), static_cast<T>(y * a.y)};
+	}
+
+	template<typename T>
+	template<typename U>
+	inline void Vec2<T>::operator*=(const Vec2<U>& a)
+	{
+		*this = operator*(a);
 	}
 
 	template<typename T>
@@ -97,26 +128,45 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec2<T> Vec2<T>::operator/=(const U& a)
+	void Vec2<T>::operator/=(const U& a)
 	{
 		*this = operator/(a);
 	}
 
 	template<typename T>
-	bool Vec2<T>::operator==(const Vec2& a) const
+	template<typename U>
+	bool Vec2<T>::operator==(const Vec2<U>& a) const
 	{
-		return x == a.x && y == a.y;
+		return x == static_cast<T>(a.x) && y == static_cast<T>(a.y);
 	}
 
 	template<typename T>
-	bool Vec2<T>::operator!=(const Vec2& a) const
+	template<typename U>
+	inline bool Vec2<T>::operator==(const Vec3<U>& b) const
+	{
+		return x == static_cast<T>(b.x) && y == static_cast<T>(b.y);
+	}
+
+	template<typename T>
+	template<typename U>
+	bool Vec2<T>::operator!=(const Vec2<U>& a) const
 	{
 		return x != a.x || y != a.y;
 	}
 
 	template<typename T>
+	template<typename U>
+	inline bool Vec2<T>::operator!=(const Vec3<U>& b) const
+	{
+		return x != b.x || y != b.y;
+	}
+
+	template<typename T>
 	T& Vec2<T>::operator[](const size_t a)
 	{
+		if (a >= 2)
+			// Return first if not valid index
+			return *((&x));
 		return *((&x) + a);
 	}
 
@@ -183,9 +233,37 @@ namespace GALAXY::Math {
 		return oss.str();
 	}
 
+	template<typename T>
+	Vec2<float> Vec2<T>::ToFloat() const
+	{
+		return Vec2f{ static_cast<float>(x), static_cast<float>(y) };
+	}
+
+	template<typename T>
+	Vec2<int> Vec2<T>::ToInt() const
+	{
+		return Vec2i{ static_cast<int>(x), static_cast<int>(y) };
+	}
+
+	template<typename T>
+	T* Vec2<T>::Data() const
+	{
+		return const_cast<T*>(reinterpret_cast<const T*>(this));
+	}
+
 #pragma endregion
 
 #pragma region Vec3
+
+	template<typename T>
+	inline Vec3<T>::Vec3(const std::string& str)
+	{
+		std::istringstream ss(str);
+
+		char discard;
+		ss >> this->x >> discard >> this->y >> discard >> this->z;
+	}
+
 	template<typename T>
 	template<typename U>
 	Vec3<T>::Vec3(const Vec2<U>& xy, T _z)
@@ -326,7 +404,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	T Vec3<T>::Cross(const Vec3& a) const
+	Vec3<T> Vec3<T>::Cross(const Vec3& a) const
 	{
 		return { (y * a.z) - (z * a.y), (z * a.x) - (x * a.z), (x * a.y) - (y * a.x) };
 	}
@@ -407,11 +485,23 @@ namespace GALAXY::Math {
 		return result;
 	}
 
-
+	template<typename T>
+	T* Vec3<T>::Data() const
+	{
+		return const_cast<T*>(reinterpret_cast<const T*>(this));
+	}
 
 #pragma endregion
 
 #pragma region Vec4
+	template<typename T>
+	inline Vec4<T>::Vec4(const std::string& str)
+	{
+		std::istringstream ss(str);
+
+		char discard;
+		ss >> this->x >> discard >> this->y >> discard >> this->z >> discard >> this->w;
+	}
 
 	template<typename T>
 	template<typename U>
@@ -518,6 +608,11 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
+	inline const T& Vec4<T>::operator[](const size_t a) const {
+		return *((&x) + a);
+	}
+
+	template<typename T>
 	inline T Vec4<T>::LengthSquared() const {
 		return (x * x + y * y + z * z + w * w);
 	}
@@ -585,6 +680,12 @@ namespace GALAXY::Math {
 		return oss.str();
 	}
 
+	template<typename T>
+	T* Vec4<T>::Data() const
+	{
+		return const_cast<T*>(reinterpret_cast<const T*>(this));
+	}
+
 #pragma endregion
 
 #pragma  region Mat4
@@ -621,11 +722,8 @@ namespace GALAXY::Math {
 		{
 			for (size_t i = 0; i < 4; i++)
 			{
-				float res = 0;
 				for (size_t k = 0; k < 4; k++)
-					res += content[j][k] * a.content[k][i];
-
-				out.content[j][i] = res;
+					out.content[j][i] += content[j][k] * a.content[k][i];
 			}
 		}
 		return out;
@@ -649,10 +747,10 @@ namespace GALAXY::Math {
 	{
 		Vec3<U> res;
 		float w;
-		res.x = content[0][0] * point.x + content[0][1] * point.y + content[0][2] * point.z + content[0][3];
-		res.y = content[1][0] * point.x + content[1][1] * point.y + content[1][2] * point.z + content[1][3];
-		res.z = content[2][0] * point.x + content[2][1] * point.y + content[2][2] * point.z + content[2][3];
-		w = content[3][0] * point.x + content[3][1] * point.y + content[3][2] * point.z + content[3][3];
+		res.x = content[0][0] * point.x + content[1][0] * point.y + content[2][0] * point.z + content[3][0];
+		res.y = content[0][1] * point.x + content[1][1] * point.y + content[2][1] * point.z + content[3][1];
+		res.z = content[0][2] * point.x + content[1][2] * point.y + content[2][2] * point.z + content[3][2];
+		w = content[0][3] * point.x + content[1][3] * point.y + content[2][3] * point.z + content[3][3];
 
 		w = 1.f / w;
 		res.x *= w;
@@ -678,6 +776,22 @@ namespace GALAXY::Math {
 	{
 		return content[a];
 	}
+
+	inline Mat4 Mat4::CreateProjectionMatrix(float _fov, float _aspect, float _near, float _far)
+	{
+		float tanHalfFov = std::tan(_fov * DegToRad * 0.5f);
+
+		Mat4 projectionMatrix = Mat4();
+		projectionMatrix[0][0] = 1.0f / (_aspect * tanHalfFov);
+		projectionMatrix[1][1] = 1.0f / tanHalfFov;
+		projectionMatrix[2][2] = (_far + _near) / (_far - _near);
+		projectionMatrix[3][2] = 1.0f;
+		projectionMatrix[2][3] = -(2.0f * _far * _near) / (_far - _near);
+		projectionMatrix[3][3] = 0.0f;
+
+		return projectionMatrix;
+	}
+
 	template<typename U>
 	inline Mat4 Mat4::CreateTranslationMatrix(const Vec3<U>& translation)
 	{
@@ -723,8 +837,8 @@ namespace GALAXY::Math {
 		out[0][0] = s;
 		out[1][1] = s;
 		out[2][2] = param1;
-		out[2][3] = -1;
-		out[3][2] = param2;
+		out[3][2] = -1;
+		out[2][3] = param2;
 		return out;
 	}
 	/*
@@ -739,7 +853,7 @@ namespace GALAXY::Math {
 	template<typename U>
 	inline Vec3<U> Mat4::GetPosition() const
 	{
-		return { content[0][3], content[1][3], content[2][3] };
+		return { content[3][0], content[3][1], content[3][2] };
 	}
 
 	template<typename U>
@@ -755,7 +869,7 @@ namespace GALAXY::Math {
 	template<typename U>
 	inline Vec3<U> Mat4::GetEulerRotation() const
 	{
-		float sy = sqrt(content[0][0] * content[0][0] + content[1][0] * content[1][0]);
+		float sy = sqrt(content[0][0] * content[0][0] + content[0][1] * content[0][1]);
 
 		bool singular = sy < 1e-6;
 
@@ -763,18 +877,18 @@ namespace GALAXY::Math {
 
 		if (!singular)
 		{
-			x = atan2(content[2][1], content[2][2]);
-			y = atan2(-content[2][0], sy);
-			z = atan2(content[1][0], content[0][0]);
+			x = atan2( content[1][2], content[2][2]);
+			y = atan2(-content[0][2], sy);
+			z = atan2(content[0][1], content[0][0]);
 		}
 		else
 		{
-			x = atan2(-content[1][2], content[1][1]);
-			y = atan2(-content[2][0], sy);
+			x = atan2(-content[2][1], content[1][1]);
+			y = atan2(-content[0][2], sy);
 			z = 0;
 		}
 
-		return Vec3<U>(x, y, z) * RadToDeg;
+		return -Vec3<U>(x, y, z) * RadToDeg;
 	}
 
 	inline Mat4 Mat4::CreateInverseMatrix() const
@@ -939,6 +1053,11 @@ namespace GALAXY::Math {
 		return res;
 	}
 
+	inline float* Mat4::Data() const
+	{
+		return const_cast<float*>(reinterpret_cast<const float*>(this));
+	}
+
 	inline void Mat4::Print() const
 	{
 		for (int j = 0; j < 4; j++)
@@ -978,42 +1097,51 @@ namespace GALAXY::Math {
 		{
 			float s = 0.5f / std::sqrt(trace + 1.0f);
 			float w = 0.25f / s;
-			float x = (content[2][1] - content[1][2]) * s;
-			float y = (content[0][2] - content[2][0]) * s;
-			float z = (content[1][0] - content[0][1]) * s;
-			return Quat(x, y, z, w);
+			float x = (content[1][2] - content[2][1]) * s;
+			float y = (content[2][0] - content[0][2]) * s;
+			float z = (content[0][1] - content[1][0]) * s;
+			return Quat(x, y, z, w).GetInverse();
 		}
 		else if (content[0][0] > content[1][1] && content[0][0] > content[2][2])
 		{
 			float s = 2.0f * std::sqrt(1.0f + content[0][0] - content[1][1] - content[2][2]);
-			float w = (content[2][1] - content[1][2]) / s;
 			float x = 0.25f * s;
-			float y = (content[0][1] + content[1][0]) / s;
-			float z = (content[0][2] + content[2][0]) / s;
-			return Quat(x, y, z, w);
+			float w = (content[1][2] - content[2][1]) / s;
+			float y = (content[1][0] + content[0][1]) / s;
+			float z = (content[2][0] + content[0][2]) / s;
+			return Quat(x, y, z, w).GetInverse();
 		}
 		else if (content[1][1] > content[2][2])
 		{
 			float s = 2.0f * std::sqrt(1.0f + content[1][1] - content[0][0] - content[2][2]);
-			float w = (content[0][2] - content[2][0]) / s;
-			float x = (content[0][1] + content[1][0]) / s;
 			float y = 0.25f * s;
-			float z = (content[1][2] + content[2][1]) / s;
-			return Quat(x, y, z, w);
+			float w = (content[2][0] - content[0][2]) / s;
+			float x = (content[1][0] + content[0][1]) / s;
+			float z = (content[2][1] + content[1][2]) / s;
+			return Quat(x, y, z, w).GetInverse();
 		}
 		else
 		{
 			float s = 2.0f * std::sqrt(1.0f + content[2][2] - content[0][0] - content[1][1]);
-			float w = (content[1][0] - content[0][1]) / s;
-			float x = (content[0][2] + content[2][0]) / s;
-			float y = (content[1][2] + content[2][1]) / s;
+			float w = (content[0][1] - content[1][0]) / s;
+			float x = (content[2][0] + content[0][2]) / s;
+			float y = (content[2][1] + content[1][2]) / s;
 			float z = 0.25f * s;
-			return Quat(x, y, z, w);
+			return Quat(x, y, z, w).GetInverse();
 		}
 	}
 #pragma  endregion
 
 #pragma region Quaternion
+
+	inline Quat::Quat(const std::string& str)
+	{
+		std::istringstream ss(str);
+
+		char discard;
+		ss >> this->x >> discard >> this->y >> discard >> this->z >> discard >> this->w;
+	}
+
 	inline Quat Quat::operator+(const Quat& a) const
 	{
 		return Quat(x + a.x, y + a.y, z + a.z, w + a.w);
@@ -1286,26 +1414,6 @@ namespace GALAXY::Math {
 
 	inline Mat4 Quat::ToRotationMatrix() const
 	{
-		/*
-		Mat4 m = Mat4::Identity();
-		auto q0 = w;
-		auto q1 = x;
-		auto q2 = y;
-		auto q3 = z;
-
-		m[0][0] = 2 * (q0 * q0 + q1 * q1) - 1;
-		m[1][0] = 2 * (q1 * q2 - q0 * q3);
-		m[2][0] = 2 * (q1 * q3 + q0 * q2);
-
-		m[0][1] = 2 * (q1 * q2 + q0 * q3);
-		m[1][1] = 2 * (q0 * q0 + q2 * q2) - 1;
-		m[2][1] = 2 * (q2 * q3 - q0 * q1);
-
-		m[0][2] = 2 * (q1 * q3 - q0 * q2);
-		m[1][2] = 2 * (q2 * q3 + q0 * q1);
-		m[2][2] = 2 * (q0 * q0 + q3 * q3) - 1;
-		return m;
-		*/
 		// Precalculate coordinate products
 		float _x = x * 2.0F;
 		float _y = y * 2.0F;
@@ -1322,10 +1430,26 @@ namespace GALAXY::Math {
 
 		// Calculate 3x3 matrix from orthonormal basis
 		Mat4 m;
-		m[0][0] = 1.0f - (yy + zz); m[1][0] = xy + wz; m[2][0] = xz - wy; m[3][0] = 0.0F;
-		m[0][1] = xy - wz; m[1][1] = 1.0f - (xx + zz); m[2][1] = yz + wx; m[3][1] = 0.0F;
-		m[0][2] = xz + wy; m[1][2] = yz - wx; m[2][2] = 1.0f - (xx + yy); m[3][2] = 0.0F;
-		m[0][3] = 0.0F; m[1][3] = 0.0F; m[2][3] = 0.0F; m[3][3] = 1.0F;
+		m[0][0] = 1.0f - (yy + zz);
+		m[1][0] = xy + wz;
+		m[2][0] = xz - wy;
+		m[3][0] = 0.0F;
+
+		m[0][1] = xy - wz;
+		m[1][1] = 1.0f - (xx + zz);
+		m[2][1] = yz + wx;
+		m[3][1] = 0.0F;
+
+		m[0][2] = xz + wy;
+		m[1][2] = yz - wx;
+		m[2][2] = 1.0f - (xx + yy);
+		m[3][2] = 0.0F;
+
+		m[0][3] = 0.0F;
+		m[1][3] = 0.0F;
+		m[2][3] = 0.0F;
+		m[3][3] = 1.0F;
+
 		return m;
 	}
 
@@ -1333,9 +1457,12 @@ namespace GALAXY::Math {
 	{
 		printf("Quaternion { %f, %f, %f, %f}\n", x, y, z, w);
 	}
-	inline std::string Quat::ToString() const
+	inline std::string Quat::ToString(int precision) const
 	{
-		return std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z) + " " + std::to_string(w);
+		std::ostringstream oss;
+		oss << std::fixed << std::setprecision(precision);
+		oss << x << ", " << y << ", " << z << ", " << w;
+		return oss.str();
 	}
 #pragma endregion
 }
