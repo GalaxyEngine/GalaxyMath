@@ -303,6 +303,12 @@ namespace GALAXY::Math
 		inline std::string ToString(int precision = 6) const;
 
 		T* Data() const;
+
+#ifdef MATH_GLM_EXTENSION
+		inline glm::vec4 ToGlm() const { return glm::vec4(x, y, z, w); }
+
+		inline bool operator==(const glm::vec4& b) const { return AlmostEqual(x, b.x) && AlmostEqual(y, b.y) && AlmostEqual(z, b.z) && AlmostEqual(w, b.w); }
+#endif
 	};
 
 

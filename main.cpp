@@ -2,10 +2,6 @@
 
 #define MATH_GLM_EXTENSION
 #include "Maths.h"
-
-#include <boost/math/quaternion.hpp>
-#include <boost/math/constants/constants.hpp>
-
 using namespace GALAXY::Math;
 
 VTEST(MATH_TEST)
@@ -218,7 +214,15 @@ VTEST(MATH_TEST)
 		}
 		TEST(Methods)
 		{
-
+			Vec4f value(1.54f, 2.32f, 23.47f, 3.62f);
+			COMPARE(value.LengthSquared(), glm::length2(value.ToGlm()));
+			COMPARE(value.Length(), glm::length(value.ToGlm()));
+			Vec4f value2(98.54f, 12.32f, 37.89f, 3.57f);
+			COMPARE(value.Dot(value2), glm::dot(value.ToGlm(), value2.ToGlm()));
+			REQUIRE(AlmostEqual(value.Distance(value2), glm::distance(value.ToGlm(), value2.ToGlm())));
+			REQUIRE(value.GetHomogenize() == Vec4f(Vec3f(value) / value.w));
+			REQUIRE(value.GetNormalize() == glm::normalize(value.ToGlm()));
+			REQUIRE(value.ToVector3() == Vec3f(value));
 		}
 	}
 }
