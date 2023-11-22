@@ -3,6 +3,9 @@
 #define MATH_GLM_EXTENSION
 #include "Maths.h"
 
+#include <boost/math/quaternion.hpp>
+#include <boost/math/constants/constants.hpp>
+
 using namespace GALAXY::Math;
 
 VTEST(MATH_TEST)
@@ -148,12 +151,76 @@ VTEST(MATH_TEST)
 			);
 			REQUIRE(value.Lerp(value2, 0.5f) == expected);
 			
-			//TODO : Test other methods
+			Vec3f angle(147.5, 34.25f, 144.0f);
+			Vec3f radAngle = angle * DegToRad;
+
+			Quat quat = angle.ToQuaternion();
+			glm::quat glmQuat = glm::quat(radAngle.ToGlm());
+			REQUIRE(quat == glmQuat);
 
 			REQUIRE(value.ToString(5) == std::string("1.54000, 2.32100, 23.47800"));
 		}
 	}
 #pragma endregion
+
+#pragma region Vector 4 Tests
+	NAMESPACE(Vector_4)
+	{
+		TEST(Constructors)
+		{
+			REQUIRE(Vec4f(1.f) == Vec4d(1, 1, 1, 1));
+			REQUIRE(Vec4f(Vec3d(3.5f, 6.6f, 7.5), 0.1f) == Vec4d(3.5, 6.6, 7.5, 0.1f));
+			REQUIRE(Vec4f("2.5, 1.33, 6.75, 2.32") == Vec4d(2.5, 1.33, 6.75, 2.32));
+			REQUIRE(Vec4i("2, 1, 6, 5") == Vec4d(2, 1, 6, 5));
+			REQUIRE(Vec4i(Vec2d(2.5, 6.9), 1.f, 0.5f) == Vec4d(2, 6, 1, 0));
+			REQUIRE(Vec4i(Vec3d(2.5, 6.9, 4.5f), 0.5f) == Vec4d(2, 6, 4, 0));
+			REQUIRE(Vec4i(Vec3d(2.5, 6.9, 7.7)) == Vec4d(2, 6, 7, 0));
+		}
+		TEST(Comparison Operators)
+		{
+			REQUIRE(Vec4i(3, 6, 1, 5) == Vec4f(3.5f, 6.6f, 1.2f, 5.6f));
+			REQUIRE(Vec4d(3, 6, 1, 5) == Vec4i(3.5f, 6.6f, 1.2f, 5.6f));
+			REQUIRE(Vec4i(3, 6, 1, 5) != Vec4d(4.5f, 6.6f, 1.2f, 5.6f));
+		}
+		TEST(Arithmetic Operators)
+		{
+			REQUIRE(Vec4d(2, 2, 2, 2) + Vec4f(1) == Vec4i(3));
+			REQUIRE(Vec4i(2, 2, 2, 2) - Vec4f(1, 1, 1, 1) == Vec4d(1));
+			REQUIRE(-Vec4i(2, 2, 2, 2) == Vec4d(-2, -2, -2, -2));
+			REQUIRE(Vec4i(2, 2, 2, 2) * 4 == Vec4d(8));
+			REQUIRE(Vec4i(2, 2, 2, 2) * Vec4f(1, 2, 5, 3) == Vec4d(2, 4, 10, 6));
+			REQUIRE(Vec4i(2.5, 3, 9.0, 6.6) / 3 == Vec4d(0, 1, 3, 2));
+		}
+		TEST(Assignement Operators)
+		{
+			//Copy operator
+			Vec4f value = Vec4f(2.5f, 1.33f, 2.5f, 1.33f);
+			REQUIRE(value == Vec4f(2.5f, 1.33f, 2.5f, 1.33f));
+			value += Vec4d(1.1f, 6.3f, 5.6f, 9.2f);
+			REQUIRE(value == Vec4f(3.6f, 7.63f, 8.1f, 10.53f));
+			value -= Vec4f(5.3f, 4.7f, 3.6f, 1.1f);
+			REQUIRE(value == Vec4f(-1.7f, 2.93f, 4.5f, 9.43f));
+			value *= 5.f;
+			REQUIRE(value == Vec4f(-8.5f, 14.65f, 22.5f, 47.15f));
+			value *= Vec4f(-2, 3, 4, 0.2f);
+			REQUIRE(value == Vec4f(17, 43.95f, 90.0, 9.43f));
+			value /= 2;
+			REQUIRE(value == Vec4f(8.5, 21.975, 45, 4.715));
+		}
+		TEST(Subscript Operators)
+		{
+			Vec4i value(1.f, 3.95f, -50, 2.5f);
+			COMPARE(value[0], 1);
+			COMPARE(value[1], 3.00f);
+			COMPARE(value[2], -50);
+			COMPARE(value[3], 2.00f);
+			COMPARE(value[4], 1);
+		}
+		TEST(Methods)
+		{
+
+		}
+	}
 }
 
 int main() {

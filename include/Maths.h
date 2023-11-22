@@ -10,6 +10,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <glm/gtx/norm.hpp> 
+#include <glm/gtx/euler_angles.hpp> 
 #endif
 
 namespace GALAXY::Math
@@ -22,7 +23,6 @@ namespace GALAXY::Math
 	template<typename T>
 	class Vec4;
 	class Quat;
-
 
 	template<typename T>
 	class Vec2
@@ -219,27 +219,28 @@ namespace GALAXY::Math
 	public:
 		T x = 0, y = 0, z = 0, w = 0;
 
-		Vec4() : x(0), y(0), z(0), w(0) {}
+		inline Vec4() : x(0), y(0), z(0), w(0) {}
 
-		Vec4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
+		inline Vec4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
 
-		explicit Vec4(T xyzw) : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
-
-		Vec4(const std::string& str);
+		explicit inline Vec4(T xyzw) : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
 
 		template<typename U>
-		Vec4(const Vec2<U>& xy, T _z = 0, T _w = 0);
+		inline Vec4(const Vec2<U>& xy, T _z = 0, T _w = 0);
 
 		template<typename U>
-		Vec4(const Vec3<U>& xyz, T _w = 0);
+		inline Vec4(const Vec3<U>& xyz, T _w = 0);
 
 		template<typename U>
-		Vec4(const Vec4<U>& a);
+		inline Vec4(const Vec4<U>& a);
+
+		inline Vec4(const std::string& str);
 
 		inline Vec4 operator+(const Vec4& b) const;
 		inline Vec4 operator-(const Vec4& b) const;
 		inline Vec4 operator-(void) const;
-		inline Vec4 operator*(const Vec4& b) const;
+		template<typename U>
+		inline Vec4 operator*(const Vec4<U>& b) const;
 		template<typename U>
 		inline Vec4 operator*(const U& b) const;
 		template<typename U>
@@ -253,8 +254,10 @@ namespace GALAXY::Math
 		template<typename U>
 		inline void operator/=(const U& b);
 
-		inline bool operator==(const Vec4& b) const;
-		inline bool operator!=(const Vec4& b) const;
+		template<typename U>
+		inline bool operator==(const Vec4<U>& b) const;
+		template<typename U>
+		inline bool operator!=(const Vec4<U>& b) const;
 
 		inline T& operator[](const size_t a);
 		inline const T& operator[](const size_t a) const;
@@ -473,6 +476,12 @@ namespace GALAXY::Math
 		inline void Print() const;
 
 		inline std::string ToString(int precision = 6) const;
+
+#ifdef MATH_GLM_EXTENSION
+		inline glm::quat ToGlm() const { return glm::quat(w, x, y, z); }
+
+		inline bool operator==(const glm::quat& b) const { return this->x == b.x && y == b.y && z == b.z && w == b.w;; }
+#endif
 	};
 
 }

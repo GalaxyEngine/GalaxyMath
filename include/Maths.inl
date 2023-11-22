@@ -114,7 +114,7 @@ namespace GALAXY::Math {
 	template<typename U>
 	inline Vec2<T> Vec2<T>::operator*(const Vec2<U>& a) const
 	{
-		return { static_cast<T>(x * a.x), static_cast<T>(y * a.y)};
+		return { static_cast<T>(x * a.x), static_cast<T>(y * a.y) };
 	}
 
 	template<typename T>
@@ -482,28 +482,26 @@ namespace GALAXY::Math {
 	template<typename T>
 	inline Quat Vec3<T>::ToQuaternion() const
 	{
-		float halfToRad = 0.5f * DegToRad;  // Convert degrees to radians
-
-		float xRad = x * halfToRad;
-		float yRad = y * halfToRad;
-		float zRad = z * halfToRad;
-
-		float sinX = std::sin(xRad);
-		float cosX = std::cos(xRad);
-		float sinY = std::sin(yRad);
-		float cosY = std::cos(yRad);
-		float sinZ = std::sin(zRad);
-		float cosZ = std::cos(zRad);
-
 		Quat result;
+		Vec3<T> eulerAngle = *this * DegToRad;
 
-		result.w = cosY * cosX * cosZ + sinY * sinX * sinZ;
-		result.x = cosY * sinX * cosZ + sinY * cosX * sinZ;
-		result.y = sinY * cosX * cosZ - cosY * sinX * sinZ;
-		result.z = cosY * cosX * sinZ - sinY * sinX * cosZ;
+		Vec3<T> c;
+		c.x = std::cos(eulerAngle.x * T(0.5));
+		c.y = std::cos(eulerAngle.y * T(0.5));
+		c.z = std::cos(eulerAngle.z * T(0.5));
 
+		Vec3<T> s;
+		s.x = std::sin(eulerAngle.x * T(0.5));
+		s.y = std::sin(eulerAngle.y * T(0.5));
+		s.z = std::sin(eulerAngle.z * T(0.5));
+
+		result.w = c.x * c.y * c.z + s.x * s.y * s.z;
+		result.x = s.x * c.y * c.z - c.x * s.y * s.z;
+		result.y = c.x * s.y * c.z + s.x * c.y * s.z;
+		result.z = c.x * c.y * s.z - s.x * s.y * c.z;
 		return result;
 	}
+
 
 	template<typename T>
 	inline T* Vec3<T>::Data() const
@@ -525,7 +523,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec4<T>::Vec4(const Vec2<U>& xy, T _z /*= 0*/, T _w /*= 0*/)
+	inline Vec4<T>::Vec4(const Vec2<U>& xy, T _z /*= 0*/, T _w /*= 0*/)
 	{
 		x = static_cast<T>(xy.x);
 		y = static_cast<T>(xy.y);
@@ -535,7 +533,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec4<T>::Vec4(const Vec3<U>& xyz, T _w /*= 0*/)
+	inline Vec4<T>::Vec4(const Vec3<U>& xyz, T _w /*= 0*/)
 	{
 		x = static_cast<T>(xyz.x);
 		y = static_cast<T>(xyz.y);
@@ -545,7 +543,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	Vec4<T>::Vec4(const Vec4<U>& a)
+	inline Vec4<T>::Vec4(const Vec4<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -569,7 +567,8 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline Vec4<T> Vec4<T>::operator*(const Vec4& b) const {
+	template<typename U>
+	inline Vec4<T> Vec4<T>::operator*(const Vec4<U>& b) const {
 		return Vec4(x * b.x, y * b.y, z * b.z, w * b.w);
 	}
 
@@ -613,22 +612,30 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline bool Vec4<T>::operator==(const Vec4& b) const {
-		return (x == b.x && y == b.y && z == b.z && w == b.w);
+	template<typename U>
+	inline bool Vec4<T>::operator==(const Vec4<U>& b) const {
+		return AlmostEqual(x, static_cast<T>(b.x)) && AlmostEqual(y, static_cast<T>(b.y))
+			&& AlmostEqual(z, static_cast<T>(b.z)) && AlmostEqual(w, static_cast<T>(b.w));
 	}
 
 	template<typename T>
-	inline bool Vec4<T>::operator!=(const Vec4& b) const {
-		return (x != b.x || y != b.y || z != b.z || w != b.w);
+	template<typename U>
+	inline bool Vec4<T>::operator!=(const Vec4<U>& b) const {
+		return !AlmostEqual(x, static_cast<T>(b.x)) || !AlmostEqual(y, static_cast<T>(b.y))
+			|| !AlmostEqual(z, static_cast<T>(b.z)) || !AlmostEqual(w, static_cast<T>(b.w));
 	}
 
 	template<typename T>
 	inline T& Vec4<T>::operator[](const size_t a) {
+		if (a >= 4)
+			return x;
 		return *((&x) + a);
 	}
 
 	template<typename T>
 	inline const T& Vec4<T>::operator[](const size_t a) const {
+		if (a >= 4)
+			return x;
 		return *((&x) + a);
 	}
 
@@ -897,7 +904,7 @@ namespace GALAXY::Math {
 
 		if (!singular)
 		{
-			x = atan2( content[1][2], content[2][2]);
+			x = atan2(content[1][2], content[2][2]);
 			y = atan2(-content[0][2], sy);
 			z = atan2(content[0][1], content[0][0]);
 		}
