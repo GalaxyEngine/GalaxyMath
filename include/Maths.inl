@@ -1188,13 +1188,14 @@ namespace GALAXY::Math {
 			w * a.w - x * a.x - y * a.y - z * a.z);
 	}
 
-	inline Quat Quat::operator*(const float& a) const
+	inline Quat Quat::operator*(float a) const
 	{
 		return Quat(this->x * a, this->y * a, this->z * a, this->w * a);
 	}
 	template<typename U>
-	inline Vec3<U> Quat::operator*(const Vec3<U>& a) const
+	inline Vec3<U> Quat::operator*(const Vec3<U>& v) const
 	{
+#if 0
 		Vec3<U> vector;
 		float ax = x * 2.f;
 		float ay = y * 2.f;
@@ -1211,10 +1212,42 @@ namespace GALAXY::Math {
 		return { (1.f - (yy + zz)) * a.x + (xy - wz) * a.y + (xz + wy) * a.z ,
 				(xy + wz) * a.x + (1.f - (xx + zz)) * a.y + (yz - wx) * a.z ,
 				(xz - wy) * a.x + (yz + wx) * a.y + (1.f - (xx + yy)) * a.z };
+#else
+		Quat q = *this;
+		Vec3f const QuatVector(q.x, q.y, q.z);
+		Vec3f const uv(QuatVector.Cross(v));
+		Vec3f const uuv(QuatVector.Cross(uv));
+		return v + ((uv * q.w) + uuv) * static_cast<U>(2);
+#endif
+
+	}
+
+	inline void Quat::operator*=(const Quat& a)
+	{
+		*this = operator*(a);
+	}
+
+	inline void Quat::operator*=(float a)
+	{
+		*this = operator*(a);
+	}
+
+	inline bool Quat::operator==(const Quat& a) const
+	{
+		return AlmostEqual(x, a.x) && AlmostEqual(y, a.y) 
+			&& AlmostEqual(z, a.z) && AlmostEqual(w, a.w);
+	}
+
+	inline bool Quat::operator!=(const Quat& a) const
+	{
+		return	!AlmostEqual(x, a.x) || !AlmostEqual(y, a.y)
+			|| !AlmostEqual(z, a.z) || !AlmostEqual(w, a.w);
 	}
 
 	inline float& Quat::operator[](const size_t index)
 	{
+		if (index >= 4)
+			return x;
 		return *((&x) + index);
 	}
 
@@ -1232,29 +1265,9 @@ namespace GALAXY::Math {
 	}
 
 	template<typename U>
-	Quat Quat::FromEuler(Vec3<U> euler)
+	Quat Quat::FromEuler(const Vec3<U>& euler)
 	{
-		float halfToRad = 0.5f * DegToRad;  // Convert degrees to radians
-
-		float xRad = euler.x * halfToRad;
-		float yRad = euler.y * halfToRad;
-		float zRad = euler.z * halfToRad;
-
-		float sinX = std::sin(xRad);
-		float cosX = std::cos(xRad);
-		float sinY = std::sin(yRad);
-		float cosY = std::cos(yRad);
-		float sinZ = std::sin(zRad);
-		float cosZ = std::cos(zRad);
-
-		Quat result;
-
-		result.w = cosY * cosX * cosZ + sinY * sinX * sinZ;
-		result.x = cosY * sinX * cosZ + sinY * cosX * sinZ;
-		result.y = sinY * cosX * cosZ - cosY * sinX * sinZ;
-		result.z = cosY * cosX * sinZ - sinY * sinX * cosZ;
-
-		return result;
+		return euler.ToQuaternion();
 	}
 
 	template<typename U>

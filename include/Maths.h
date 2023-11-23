@@ -438,10 +438,17 @@ namespace GALAXY::Math
 
 		inline Quat operator*(const Quat& a) const;
 
-		inline Quat operator*(const float& a) const;
+		inline Quat operator*(float a) const;
 
 		template<typename U>
 		inline Vec3<U> operator*(const Vec3<U>& a) const;
+
+		inline void operator*=(const Quat& a);
+
+		inline void operator*=(float a);
+
+		inline bool operator==(const Quat& a) const;
+		inline bool operator!=(const Quat& a) const;
 
 		inline float& operator[](const size_t index);
 
@@ -451,7 +458,7 @@ namespace GALAXY::Math
 		static inline Quat AngleAxis(float angle, Vec3<U> axis);
 
 		template<typename U>
-		static inline Quat FromEuler(Vec3<U> euler);
+		static inline Quat FromEuler(const Vec3<U>& euler);
 
 		template<typename U>
 		static inline Quat LookRotation(Vec3<U> forward, Vec3<U> up);
@@ -486,7 +493,7 @@ namespace GALAXY::Math
 #ifdef MATH_GLM_EXTENSION
 		inline glm::quat ToGlm() const { return glm::quat(w, x, y, z); }
 
-		inline bool operator==(const glm::quat& b) const { return this->x == b.x && y == b.y && z == b.z && w == b.w;; }
+		inline bool operator==(const glm::quat& b) const { return AlmostEqual(x, b.x) && AlmostEqual(y, b.y) && AlmostEqual(z, b.z) && AlmostEqual(w, b.w); }
 #endif
 	};
 

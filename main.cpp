@@ -104,7 +104,7 @@ VTEST(MATH_TEST)
 		TEST(Assignement Operators)
 		{
 			//Copy operator
-			Vec3f value = Vec3f(2.5f, 1.33f ,2.5f);
+			Vec3f value = Vec3f(2.5f, 1.33f, 2.5f);
 			REQUIRE(value == Vec3f(2.5f, 1.33f, 2.5f));
 			value += Vec3d(1.1f, 6.3f, 5.6f);
 			REQUIRE(value == Vec3f(3.6f, 7.63f, 8.1f));
@@ -146,7 +146,7 @@ VTEST(MATH_TEST)
 				glm::mix(value.z, value2.z, glm::clamp(0.5f, 0.0f, 1.0f))
 			);
 			REQUIRE(value.Lerp(value2, 0.5f) == expected);
-			
+
 			Vec3f angle(147.5, 34.25f, 144.0f);
 			Vec3f radAngle = angle * DegToRad;
 
@@ -223,6 +223,88 @@ VTEST(MATH_TEST)
 			REQUIRE(value.GetHomogenize() == Vec4f(Vec3f(value) / value.w));
 			REQUIRE(value.GetNormalize() == glm::normalize(value.ToGlm()));
 			REQUIRE(value.ToVector3() == Vec3f(value));
+			auto stringValue = value.ToString(4);
+			REQUIRE(stringValue == std::string("1.5400, 2.3200, 23.4700, 3.6200"));
+		}
+	}
+#pragma endregion
+
+#pragma region Quaternion Tests
+	NAMESPACE(Quaternion_4)
+	{
+		TEST(Constructors)
+		{
+			REQUIRE(Quat() == Quat(0, 0, 0, 1));
+			REQUIRE(Quat(1) == Quat(1, 1, 1, 1));
+			REQUIRE(Quat(1, 2, 3) == Quat(1, 2, 3, 1));
+			REQUIRE(Quat("1, 2, 3, 1") == Quat(1, 2, 3, 1));
+			REQUIRE(Quat(Vec3f(1, 2, 3)) == Quat(1, 2, 3, 1));
+			REQUIRE(Quat(Vec4f(1, 2, 3, 1)) == Quat(1, 2, 3, 1));
+		}
+		TEST(Comparison Operators)
+		{
+			REQUIRE(Quat(0) != Quat(0, 0, 0, 1));
+		}
+		TEST(Arithmetic Operators)
+		{
+			// Addition
+			Quat quat1 = Quat(1, 2, 3, 4);
+			Quat quat2 = Quat(5, 6, 7, 8);
+			REQUIRE(quat1 + quat2 == quat1.ToGlm() + quat2.ToGlm());
+
+			// Subtraction
+			REQUIRE(quat1 - quat2 == quat1.ToGlm() - quat2.ToGlm());
+
+			// Multiplication
+			REQUIRE(quat1 * quat2 == quat1.ToGlm() * quat2.ToGlm());
+
+			REQUIRE(quat1 * 5 == Quat(5, 10, 15, 20));
+
+			Vec3f vectorValue = Vec3f(2.56f, 453.14f, 573.3f);
+			auto result = quat1 * vectorValue;
+			auto glmResult = quat1.ToGlm() * vectorValue.ToGlm();
+			REQUIRE(quat1 * vectorValue == quat1.ToGlm() * vectorValue.ToGlm());
+		}
+		TEST(Subscript Operators)
+		{
+			Quat value(1.f, 3.95f, -50, 2.5f);
+			COMPARE(value[0], 1);
+			COMPARE(value[1], 3.95f);
+			COMPARE(value[2], -50);
+			COMPARE(value[3], 2.50f);
+			COMPARE(value[4], 1);
+		}
+		TEST(Assignement Operators)
+		{
+			Quat quat1 = Quat(1, 2, 3, 4);
+			Quat quat2 = Quat(5, 6, 7, 8);
+			quat1 *= 5;
+			REQUIRE(quat1 == Quat(5, 10, 15, 20));
+
+			auto glmResult = quat1.ToGlm() * quat2.ToGlm();
+			quat1 *= quat2;
+			REQUIRE(quat1 == glmResult);
+
+			Vec3f vectorValue = Vec3f(2.56f, 453.14f, 573.3f);
+			auto glmResult2 = quat1.ToGlm() * vectorValue.ToGlm();
+
+			REQUIRE(quat1 * vectorValue == glmResult2);
+		}
+		TEST(Methods)
+		{
+			REQUIRE(Quat::Identity() == Quat(0, 0, 0, 1));
+
+			float angle = 36.32f;
+			Vec3f axis(0, 1, 0);
+
+			Quat angleAxis = Quat::AngleAxis(angle, axis);
+			glm::quat glmAngleAxis = glm::angleAxis(angle * DegToRad, axis.ToGlm());
+			REQUIRE(angleAxis == glmAngleAxis);
+
+			Vec3f euler(32.5f, -63.21f, 17.93f);
+			Quat eulerQuat = Quat::FromEuler(euler);
+			glm::quat glmEulerQuat = glm::quat(DegToRad * euler.ToGlm());
+			REQUIRE(eulerQuat == glmEulerQuat);
 		}
 	}
 }
