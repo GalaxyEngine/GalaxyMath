@@ -724,6 +724,15 @@ namespace GALAXY::Math {
 		content[3][3] = 1;
 	}
 
+	inline Mat4::Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3)
+	{
+		content[0] = m0;
+		content[1] = m1;
+		content[2] = m2;
+		content[3] = m3;
+	}
+
+
 	inline Mat4::Mat4(const float* data)
 	{
 		for (size_t i = 0; i < 4; ++i) {
@@ -744,16 +753,22 @@ namespace GALAXY::Math {
 
 	inline Mat4 Mat4::operator*(const Mat4& a) const
 	{
-		Mat4 out;
-		for (size_t j = 0; j < 4; j++)
-		{
-			for (size_t i = 0; i < 4; i++)
-			{
-				for (size_t k = 0; k < 4; k++)
-					out.content[j][i] += content[j][k] * a.content[k][i];
-			}
-		}
-		return out;
+		Vec4f SrcA0 = this->content[0];
+		Vec4f SrcA1 = this->content[1];
+		Vec4f SrcA2 = this->content[2];
+		Vec4f SrcA3 = this->content[3];
+
+		Vec4f SrcB0 = a.content[0];
+		Vec4f SrcB1 = a.content[1];
+		Vec4f SrcB2 = a.content[2];
+		Vec4f SrcB3 = a.content[3];
+
+		Mat4 Result;
+		Result[0] = SrcA0 * SrcB0[0] + SrcA1 * SrcB0[1] + SrcA2 * SrcB0[2] + SrcA3 * SrcB0[3];
+		Result[1] = SrcA0 * SrcB1[0] + SrcA1 * SrcB1[1] + SrcA2 * SrcB1[2] + SrcA3 * SrcB1[3];
+		Result[2] = SrcA0 * SrcB2[0] + SrcA1 * SrcB2[1] + SrcA2 * SrcB2[2] + SrcA3 * SrcB2[3];
+		Result[3] = SrcA0 * SrcB3[0] + SrcA1 * SrcB3[1] + SrcA2 * SrcB3[2] + SrcA3 * SrcB3[3];
+		return Result;
 	}
 
 	template<typename U>
@@ -799,9 +814,22 @@ namespace GALAXY::Math {
 		return tmp;
 	}
 
-	inline float* Mat4::operator[](const size_t a)
+	inline Vec4f& Mat4::operator[](const size_t i)
 	{
-		return content[a];
+		return content[i];
+	}
+
+	inline bool Mat4::operator==(const Mat4& b) const
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				if (!AlmostEqual(b.content[i][j], content[i][j]))
+					return false;
+			}
+		}
+		return true;
 	}
 
 	inline Mat4 Mat4::CreateProjectionMatrix(float _fov, float _aspect, float _near, float _far)
@@ -1157,6 +1185,46 @@ namespace GALAXY::Math {
 			return Quat(x, y, z, w).GetInverse();
 		}
 	}
+
+#ifdef MATH_GLM_EXTENSION
+
+	Mat4::Mat4(const glm::mat4& mat)
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				content[i][j] = mat[i][j];
+			}
+		}
+	}
+
+	glm::mat4 Mat4::ToGlm() const
+	{
+		auto mat = glm::mat4();
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				mat[i][j] = content[i][j];
+			}
+		}
+		return mat;
+	}
+
+	inline bool Mat4::operator==(const glm::mat4& b) const
+	{
+		for (int i = 0; i < 4; i++)
+		{
+			for (int j = 0; j < 4; j++)
+			{
+				if (!AlmostEqual(b[i][j], content[i][j]))
+					return false;
+			}
+		}
+		return true;
+	}
+#endif
 #pragma  endregion
 
 #pragma region Quaternion

@@ -323,18 +323,20 @@ namespace GALAXY::Math
 		/* data of the matrix : content[y][x]
 		 * Matrix is indexed with:
 		 *
-		 * 00 | 01 | 02 | 03
-		 * 10 | 11 | 12 | 13
-		 * 20 | 21 | 22 | 23
-		 * 30 | 31 | 32 | 33
+		 * Vec4 = 00 | 01 | 02 | 03
+		 * Vec4 = 10 | 11 | 12 | 13
+		 * Vec4 = 20 | 21 | 22 | 23
+		 * Vec4 = 30 | 31 | 32 | 33
 		 *
 		*/
 
-		float content[4][4] = { 0 };
+		Vec4f content[4];
 
 		Mat4() {}
 
 		inline Mat4(float diagonal);
+
+		inline Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3);
 
 		inline Mat4(const float* data);
 
@@ -351,7 +353,9 @@ namespace GALAXY::Math
 
 		inline Mat4 operator+(const Mat4& a) const;
 
-		inline float* operator[](const size_t a);
+		inline Vec4f& operator[](size_t i);
+
+		inline bool operator==(const Mat4& b) const;
 
 		static Mat4 Identity() { return { 1.f }; }
 
@@ -408,6 +412,14 @@ namespace GALAXY::Math
 		inline Vec3<U> MultiplyVector(Vec3<U> vector);		
 
 		inline float* Data() const;
+
+#ifdef MATH_GLM_EXTENSION
+		inline Mat4(const glm::mat4& mat);
+
+		inline glm::mat4 ToGlm() const;
+
+		inline bool operator==(const glm::mat4& b) const;
+#endif
 	};
 
 	class Quat

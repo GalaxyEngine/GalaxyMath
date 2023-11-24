@@ -230,7 +230,7 @@ VTEST(MATH_TEST)
 #pragma endregion
 
 #pragma region Quaternion Tests
-	NAMESPACE(Quaternion_4)
+	NAMESPACE(Quaternion)
 	{
 		TEST(Constructors)
 		{
@@ -324,6 +324,54 @@ VTEST(MATH_TEST)
 			REQUIRE(euler == glmEuler);
 
 			REQUIRE(quat1.ToString() == std::string("1.000000, 2.000000, 3.000000, 4.000000"));
+		}
+	}
+#pragma endregion
+
+#pragma region Matrix 4 Tests
+	NAMESPACE(Matrix_4)
+	{
+		float values[16] = { 2.5f,	10.35f, 147.3f, 10.35f,
+							5.6f,	72.36f, 69.69f, 5.75f,
+							78.f,	14.f,	3.25f,	10.5f,
+							7.8f,	32.6f,	71,		6.78 };
+		Mat4 matrix = Mat4(values);
+
+		Mat4 matrix2 = Mat4(Vec4f(1.2f, 5.8f, 3.4f, 9.1f),
+			Vec4f(6.3f, 2.7f, 8.9f, 4.5f),
+			Vec4f(7.2f, 3.1f, 5.6f, 2.8f),
+			Vec4f(9.4f, 4.7f, 1.8f, 6.2f));
+
+		TEST(Constructors)
+		{
+			REQUIRE(Mat4(1) == Mat4::Identity());
+			REQUIRE(Mat4::Identity() == glm::mat4(1));
+
+			auto glmMatrix = glm::mat4(
+				values[0], values[1], values[2], values[3],
+				values[4], values[5], values[6], values[7],
+				values[8], values[9], values[10], values[11],
+				values[12], values[13], values[14], values[15]);
+
+			REQUIRE(matrix == glmMatrix);
+			REQUIRE(matrix.ToGlm() == glmMatrix);
+			REQUIRE(matrix == matrix.ToGlm());
+
+			Mat4 multiply = matrix * matrix2;
+			glm::mat4 glmMultiply = matrix.ToGlm() * matrix2.ToGlm();
+			REQUIRE(multiply == glmMultiply);
+
+			Vec4f vec4Value = Vec4f(5, 6, 3.2f, 14.f);
+			REQUIRE(matrix * vec4Value == matrix.ToGlm() * vec4Value.ToGlm());
+		}
+		TEST(Subscript Operators)
+		{
+			COMPARE(matrix2[0][1], 5.8f);
+			COMPARE(matrix2[1][0], 6.3f);
+			REQUIRE(matrix2[0] == Vec4f(1.2f, 5.8f, 3.4f, 9.1f));
+			REQUIRE(matrix2[1] == Vec4f(6.3f, 2.7f, 8.9f, 4.5f));
+			REQUIRE(matrix2[2] == Vec4f(7.2f, 3.1f, 5.6f, 2.8f));
+			REQUIRE(matrix2[3] == Vec4f(9.4f, 4.7f, 1.8f, 6.2f));
 		}
 	}
 }
