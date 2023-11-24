@@ -305,6 +305,25 @@ VTEST(MATH_TEST)
 			Quat eulerQuat = Quat::FromEuler(euler);
 			glm::quat glmEulerQuat = glm::quat(DegToRad * euler.ToGlm());
 			REQUIRE(eulerQuat == glmEulerQuat);
+
+			Vec3f forward(0, 0, 1);
+			Vec3f up(0, 1, 0);
+			REQUIRE(Quat::LookRotation(forward, up) == Quat::Identity());
+
+			Quat quat1 = Quat(1, 2, 3, 4);
+			Quat quat2 = Quat(5, 6, 7, 8);
+			REQUIRE(Quat::SLerp(quat1, quat2, 0.5f) == glm::mix(quat1.ToGlm(), quat2.ToGlm(), 0.5f));
+
+			REQUIRE(quat1.GetInverse() == glm::inverse(quat1.ToGlm()));
+			REQUIRE(quat1.GetNormalize() == glm::normalize(quat1.ToGlm()));
+			REQUIRE(quat1.GetConjugate() == glm::conjugate(quat1.ToGlm()));
+			COMPARE(quat1.Dot(quat2), glm::dot(quat1.ToGlm(), quat2.ToGlm()));
+
+			euler = eulerQuat.ToEuler();
+			auto glmEuler = glm::eulerAngles(glmEulerQuat) * RadToDeg;
+			REQUIRE(euler == glmEuler);
+
+			REQUIRE(quat1.ToString() == std::string("1.000000, 2.000000, 3.000000, 4.000000"));
 		}
 	}
 }

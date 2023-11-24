@@ -471,7 +471,7 @@ namespace GALAXY::Math
 
 		inline void Normalize();
 
-		inline Quat GetNormal() const;
+		inline Quat GetNormalize() const;
 
 		inline void Conjugate();
 

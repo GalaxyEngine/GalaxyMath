@@ -1370,9 +1370,9 @@ namespace GALAXY::Math {
 	}
 	inline void Quat::Normalize()
 	{
-		*this = GetNormal();
+		*this = GetNormalize();
 	}
-	inline Quat Quat::GetNormal() const
+	inline Quat Quat::GetNormalize() const
 	{
 		float mag = std::sqrt(Dot(*this));
 
@@ -1420,36 +1420,31 @@ namespace GALAXY::Math {
 	{
 		return ToEuler<float>();
 	}
+
 	template<typename U>
 	inline Vec3<U> Quat::ToEuler() const
 	{
-		float sqw = w * w;
-		float sqx = x * x;
-		float sqy = y * y;
-		float sqz = z * z;
-		float unit = sqx + sqy + sqz + sqw;
-		float test = x * w - y * z;
-		Vec3<U> v;
+		U pitch;
+		Quat q = *this;
+		U y = static_cast<U>(2) * (q.y * q.z + q.w * q.x);
+		U x = q.w * q.w - q.x * q.x - q.y * q.y + q.z * q.z;
 
-		if (test > 0.4995f * unit)
-		{ // singularity at north pole
-			v.y = 2.f * std::atan2(y, x);
-			v.x = PI / 2;
-			v.z = 0;
-			return NormalizeAngles(v * RadToDeg);
+		U epsilon = std::numeric_limits<U>::epsilon();
+		if (std::abs(x) < epsilon && std::abs(y) < epsilon) {
+			// Avoid atan2(0,0) - handle singularity
+			pitch = static_cast<U>(2) * std::atan2(q.x, q.w);
 		}
-		if (test < -0.4995f * unit)
-		{ // singularity at south pole
-			v.y = -2.f * std::atan2(y, x);
-			v.x = -PI / 2;
-			v.z = 0;
-			return NormalizeAngles(v * RadToDeg);
+		else
+		{
+			pitch = std::atan2(y, x);
 		}
-		Quat q = Quat(w, z, x, y);
-		v.y = std::atan2(2.f * q.x * q.w + 2.f * q.y * q.z, 1 - 2.f * (q.z * q.z + q.w * q.w));     // Yaw
-		v.x = std::asin(2.f * (q.x * q.z - q.w * q.y));                             // Pitch
-		v.z = std::atan2(2.f * q.x * q.y + 2.f * q.z * q.w, 1 - 2.f * (q.y * q.y + q.z * q.z));      // Roll
-		return NormalizeAngles(v * RadToDeg);
+
+
+		U yaw = std::asin(std::clamp(static_cast<U>(-2) * (q.x * q.z - q.w * q.y), static_cast<U>(-1), static_cast<U>(1)));
+
+		U roll = static_cast<U>(std::atan2(static_cast<U>(2) * (q.x * q.y + q.w * q.z), q.w * q.w + q.x * q.x - q.y * q.y - q.z * q.z));
+
+		return Vec3<U>(pitch, yaw, roll) * RadToDeg;
 	}
 
 	inline Mat4 Quat::ToRotationMatrix() const
