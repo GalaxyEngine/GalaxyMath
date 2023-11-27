@@ -236,6 +236,9 @@ namespace GALAXY::Math
 
 		inline Vec4(const std::string& str);
 
+		template<typename U>
+		inline Vec4 operator=(const Vec3<U>& b);
+
 		inline Vec4 operator+(const Vec4& b) const;
 		inline Vec4 operator-(const Vec4& b) const;
 		inline Vec4 operator-(void) const;
@@ -362,26 +365,25 @@ namespace GALAXY::Math
 
 		template<typename U>
 		static inline Mat4 CreateRotationMatrix(const Vec3<U>& rotation);
+		static inline Mat4 CreateRotationMatrix(const Quat& rotation);
 
 		template<typename U>
 		static inline Mat4 CreateScaleMatrix(const Vec3<U>& scale);
 
 		template<typename U>
 		static inline Mat4 CreateTransformMatrix(const Vec3<U>& position, const Vec3<U>& rotation, const Vec3<U>& scale);
-
 		template<typename U>
 		static inline Mat4 CreateTransformMatrix(const Vec3<U>& position, const Quat& rotation, const Vec3<U>& scale);
 
-		template<typename U>
-		inline Vec3<U> GetPosition() const;
+		inline void DecomposeTransformMatrix(Vec3f& position, Quat& rotation, Vec3f& scale) const;
+
+		inline Vec3f GetTranslation() const;
 
 		inline Quat GetRotation() const;
 
-		template<typename U>
-		inline Vec3<U> GetScale() const;
+		inline Vec3f GetEulerRotation() const;
 
-		template<typename U>
-		inline Vec3<U> GetEulerRotation() const;
+		inline Vec3f GetScale() const;
 
 		inline Mat4 CreateInverseMatrix() const;
 
@@ -506,7 +508,6 @@ namespace GALAXY::Math
 }
 
 using namespace GALAXY::Math;
-#define IMGUI_IMPLEMENTATION
 #ifdef IMGUI_IMPLEMENTATION
 #define IM_VEC2_CLASS_EXTRA                                                     \
         constexpr ImVec2(const Math::Vec2f& f) : x(f.x), y(f.y) {}                   \

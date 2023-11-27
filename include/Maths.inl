@@ -552,6 +552,16 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
+	template<typename U>
+	inline Vec4<T> Vec4<T>::operator=(const Vec3<U>& b)
+	{
+		this->x = static_cast<T>(b.x);
+		this->y = static_cast<T>(b.y);
+		this->z = static_cast<T>(b.z);
+		return *this;
+	}
+
+	template<typename T>
 	inline Vec4<T> Vec4<T>::operator+(const Vec4& b) const {
 		return { x + b.x, y + b.y, z + b.z, w + b.w };
 	}
@@ -823,8 +833,8 @@ namespace GALAXY::Math {
 		Mat4 projectionMatrix = Mat4();
 		projectionMatrix[0][0] = 1.0f / (_aspect * tanHalfFov);
 		projectionMatrix[1][1] = 1.0f / tanHalfFov;
-		projectionMatrix[2][2] = - (_far + _near) / (_far - _near);
-		projectionMatrix[2][3] = - 1.0f;
+		projectionMatrix[2][2] = -(_far + _near) / (_far - _near);
+		projectionMatrix[2][3] = -1.0f;
 		projectionMatrix[3][2] = -(2.0f * _far * _near) / (_far - _near);
 		projectionMatrix[3][3] = 0.0f;
 
@@ -835,9 +845,46 @@ namespace GALAXY::Math {
 	inline Mat4 Mat4::CreateTranslationMatrix(const Vec3<U>& translation)
 	{
 		Mat4 out(1);
-		for (size_t i = 0; i < 3; i++)
-			out[i][3] = translation[i];
+		out[3] = translation;
 		return out;
+	}
+
+	inline Mat4 Mat4::CreateRotationMatrix(const Quat& rotation)
+	{
+		return rotation.ToRotationMatrix();
+	}
+
+	template<typename U>
+	inline Mat4 Mat4::CreateRotationMatrix(const Vec3<U>& rotation)
+	{
+		float t1 = rotation.x * DegToRad;
+		float t2 = rotation.y * DegToRad;
+		float t3 = rotation.z * DegToRad;
+		float c1 = glm::cos(-t1);
+		float c2 = glm::cos(-t2);
+		float c3 = glm::cos(-t3);
+		float s1 = glm::sin(-t1);
+		float s2 = glm::sin(-t2);
+		float s3 = glm::sin(-t3);
+
+		Mat4 Result;
+		Result[0][0] = c2 * c3;
+		Result[0][1] = -c1 * s3 + s1 * s2 * c3;
+		Result[0][2] = s1 * s3 + c1 * s2 * c3;
+		Result[0][3] = 0.f;
+		Result[1][0] = c2 * s3;
+		Result[1][1] = c1 * c3 + s1 * s2 * s3;
+		Result[1][2] = -s1 * c3 + c1 * s2 * s3;
+		Result[1][3] = 0.f;
+		Result[2][0] = -s2;
+		Result[2][1] = s1 * c2;
+		Result[2][2] = c1 * c2;
+		Result[2][3] = 0.f;
+		Result[3][0] = 0.f;
+		Result[3][1] = 0.f;
+		Result[3][2] = 0.f;
+		Result[3][3] = 1.f;
+		return Result;
 	}
 
 	template<typename U>
@@ -847,12 +894,6 @@ namespace GALAXY::Math {
 		for (size_t i = 0; i < 3; i++)
 			out[i][i] = scale[i];
 		return out;
-	}
-
-	template<typename U>
-	inline Mat4 Mat4::CreateRotationMatrix(const Vec3<U>& rotation)
-	{
-		return Quat::FromEuler(rotation).ToRotationMatrix();
 	}
 
 	template<typename U>
@@ -875,14 +916,180 @@ namespace GALAXY::Math {
 	}
 	*/
 
-	template<typename U>
-	inline Vec3<U> Mat4::GetPosition() const
+	inline void Mat4::DecomposeTransformMatrix(Vec3f& translation, Quat& rotation, Vec3f& scale) const
 	{
-		return { content[3][0], content[3][1], content[3][2] };
+		Mat4 LocalMatrix(*this);
+
+		for (size_t i = 0; i < 4; ++i)
+			for (size_t j = 0; j < 4; ++j)
+				LocalMatrix[i][j] /= LocalMatrix[3][3];
+
+		// perspectiveMatrix is used to solve for perspective, but it also provides
+		// an easy way to test for singularity of the upper 3x3 component.
+		Mat4 PerspectiveMatrix(LocalMatrix);
+
+		for (size_t i = 0; i < 3; i++)
+			PerspectiveMatrix[i][3] = 0.f;
+		PerspectiveMatrix[3][3] = 1.f;
+
+		auto epsilonNotEqual = [](float a, float b) -> bool
+			{
+				return std::abs(a - b) >= std::numeric_limits<float>::epsilon();
+			};
+
+		// First, isolate perspective.  This is the messiest.
+		if (
+			epsilonNotEqual(LocalMatrix[0][3], 0.f) ||
+			epsilonNotEqual(LocalMatrix[1][3], 0.f) ||
+			epsilonNotEqual(LocalMatrix[2][3], 0.f)
+			)
+		{
+			// rightHandSide is the right hand side of the equation.
+			Vec4f RightHandSide;
+			RightHandSide[0] = LocalMatrix[0][3];
+			RightHandSide[1] = LocalMatrix[1][3];
+			RightHandSide[2] = LocalMatrix[2][3];
+			RightHandSide[3] = LocalMatrix[3][3];
+
+			// Solve the equation by inverting PerspectiveMatrix and multiplying
+			// rightHandSide by the inverse.  (This is the easiest way, not
+			// necessarily the best.)
+			Mat4 InversePerspectiveMatrix = PerspectiveMatrix.CreateInverseMatrix();//   inverse(PerspectiveMatrix, inversePerspectiveMatrix);
+			Mat4 TransposedInversePerspectiveMatrix = InversePerspectiveMatrix.GetTranspose();//   transposeMatrix4(inversePerspectiveMatrix, transposedInversePerspectiveMatrix);
+
+			Vec4f Perspective = TransposedInversePerspectiveMatrix * RightHandSide;
+			//  v4MulPointByMatrix(rightHandSide, transposedInversePerspectiveMatrix, perspectivePoint);
+
+			// Clear the perspective partition
+			LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = 0.f;
+			LocalMatrix[3][3] = 1.f;
+		}
+		else
+		{
+			// No perspective.
+			Vec4f Perspective = Vec4f(0, 0, 0, 1);
+		}
+
+		// Next take care of translation (easy).
+		translation = Vec3f(LocalMatrix[3]);
+		LocalMatrix[3] = Vec4f(0, 0, 0, LocalMatrix[3].w);
+
+		Vec3f Row[3], Pdum3, Skew;
+
+		// Now get scale and shear.
+		for (size_t i = 0; i < 3; ++i)
+			for (size_t j = 0; j < 3; ++j)
+				Row[i][j] = LocalMatrix[i][j];
+
+		auto scaleVector = [](Vec3f v, float s)->Vec3f
+			{
+				return v * s / v.Length();
+			};
+
+		auto combine = [](Vec3f a, Vec3f b, float ascl, float bscl)->Vec3f
+			{
+				return a * ascl + b * bscl;
+			};
+
+		// Compute X scale factor and normalize first row.
+		scale.x = Row[0].Length();// v3Length(Row[0]);
+
+		// Scale vector
+		Row[0] = scaleVector(Row[0], 1.f);
+
+		// Compute XY shear factor and make 2nd row orthogonal to 1st.
+		Skew.z = Row[0].Dot(Row[1]);
+
+		/// Make a linear combination of two vectors and return the result.
+		Row[1] = combine(Row[1], Row[0], 1.f, -Skew.z);
+
+		// Now, compute Y scale and normalize 2nd row.
+		scale.y = Row[1].Length();
+
+		// Scale vector
+		Row[1] = scaleVector(Row[1], 1.f);
+		Skew.z /= scale.y;
+
+		// Compute XZ and YZ shears, orthogonalize 3rd row.
+		Skew.y = Row[0].Dot(Row[2]);
+		Row[2] = combine(Row[2], Row[0], 1.f, -Skew.y);
+		Skew.x = Row[1].Dot(Row[2]);
+		Row[2] = combine(Row[2], Row[1], 1.f, -Skew.x);
+
+		// Next, get Z scale and normalize 3rd row.
+		scale.z = Row[2].Length();
+		Row[2] = scaleVector(Row[2], 1.f);
+		Skew.y /= scale.z;
+		Skew.x /= scale.z;
+
+		// At this point, the matrix (in rows[]) is orthonormal.
+		// Check for a coordinate system flip.  If the determinant
+		// is -1, then negate the matrix and the scaling factors.
+		Pdum3 = Row[1].Cross(Row[2]); // v3Cross(row[1], row[2], Pdum3);
+		if (Row[0].Dot(Pdum3) < 0)
+		{
+			for (size_t i = 0; i < 3; i++)
+			{
+				scale[i] *= -1.f;
+				Row[i] *= -1.f;
+			}
+		}
+
+		// Now, get the rotations out, as described in the gem.
+
+		// FIXME - Add the ability to return either quaternions (which are
+		// easier to recompose with) or Euler angles (rx, ry, rz), which
+		// are easier for authors to deal with. The latter will only be useful
+		// when we fix https://bugs.webkit.org/show_bug.cgi?id=23799, so I
+		// will leave the Euler angle code here for now.
+
+		// ret.rotateY = asin(-Row[0][2]);
+		// if (cos(ret.rotateY) != 0) {
+		//     ret.rotateX = atan2(Row[1][2], Row[2][2]);
+		//     ret.rotateZ = atan2(Row[0][1], Row[0][0]);
+		// } else {
+		//     ret.rotateX = atan2(-Row[2][0], Row[1][1]);
+		//     ret.rotateZ = 0;
+		// }
+
+		int i, j, k = 0;
+		float root, trace = Row[0].x + Row[1].y + Row[2].z;
+		if (trace > 0.f)
+		{
+			root = std::sqrt(trace + 1.f);
+			rotation.w = 0.5f * root;
+			root = 0.5f / root;
+			rotation.x = root * (Row[1].z - Row[2].y);
+			rotation.y = root * (Row[2].x - Row[0].z);
+			rotation.z = root * (Row[0].y - Row[1].x);
+		} // End if > 0
+		else
+		{
+			static int Next[3] = { 1, 2, 0 };
+			i = 0;
+			if (Row[1].y > Row[0].x) i = 1;
+			if (Row[2].z > Row[i][i]) i = 2;
+			j = Next[i];
+			k = Next[j];
+
+			root = std::sqrt(Row[i][i] - Row[j][j] - Row[k][k] + 1.0f);
+
+			rotation[i] = 0.5f * root;
+			root = 0.5f / root;
+			rotation[j] = root * (Row[i][j] + Row[j][i]);
+			rotation[k] = root * (Row[i][k] + Row[k][i]);
+			rotation.w = root * (Row[j][k] - Row[k][j]);
+		} // End if <= 0
+
+		rotation.Conjugate();
 	}
 
-	template<typename U>
-	inline Vec3<U> Mat4::GetScale() const
+	inline Vec3f Mat4::GetTranslation() const
+	{
+		return content[3];
+	}
+
+	inline Vec3f Mat4::GetScale() const
 	{
 		// World Scale equal length of columns of the model matrix.
 		float x = Vec3f(content[0][0], content[0][1], content[0][2]).Length();
@@ -891,10 +1098,54 @@ namespace GALAXY::Math {
 		return { x, y, z };
 	}
 
-	template<typename U>
-	inline Vec3<U> Mat4::GetEulerRotation() const
+	inline Quat Mat4::GetRotation() const
 	{
-		float sy = sqrt(content[0][0] * content[0][0] + content[0][1] * content[0][1]);
+		// !! Work only with rotation matrix
+		Mat4 temp = *this;
+		// Extracting the rotation from the matrix
+		float trace = temp.content[0][0] + temp.content[1][1] + temp.content[2][2];
+
+		if (trace > 0)
+		{
+			float s = 0.5f / std::sqrt(trace + 1.0f);
+			float w = 0.25f / s;
+			float x = (temp.content[1][2] - temp.content[2][1]) * s;
+			float y = (temp.content[2][0] - temp.content[0][2]) * s;
+			float z = (temp.content[0][1] - temp.content[1][0]) * s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+		else if (temp.content[0][0] > temp.content[1][1] && temp.content[0][0] > temp.content[2][2])
+		{
+			float s = 2.0f * std::sqrt(1.0f + temp.content[0][0] - temp.content[1][1] - temp.content[2][2]);
+			float x = 0.25f * s;
+			float w = (temp.content[1][2] - temp.content[2][1]) / s;
+			float y = (temp.content[1][0] + temp.content[0][1]) / s;
+			float z = (temp.content[2][0] + temp.content[0][2]) / s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+		else if (temp.content[1][1] > temp.content[2][2])
+		{
+			float s = 2.0f * std::sqrt(1.0f + temp.content[1][1] - temp.content[0][0] - temp.content[2][2]);
+			float y = 0.25f * s;
+			float w = (temp.content[2][0] - temp.content[0][2]) / s;
+			float x = (temp.content[1][0] + temp.content[0][1]) / s;
+			float z = (temp.content[2][1] + temp.content[1][2]) / s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+		else
+		{
+			float s = 2.0f * std::sqrt(1.0f + temp.content[2][2] - temp.content[0][0] - temp.content[1][1]);
+			float w = (temp.content[0][1] - temp.content[1][0]) / s;
+			float x = (temp.content[2][0] + temp.content[0][2]) / s;
+			float y = (temp.content[2][1] + temp.content[1][2]) / s;
+			float z = 0.25f * s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+	}
+
+	inline Vec3f Mat4::GetEulerRotation() const
+	{
+		float sy = std::sqrt(content[0][0] * content[0][0] + content[0][1] * content[0][1]);
 
 		bool singular = sy < 1e-6;
 
@@ -902,18 +1153,18 @@ namespace GALAXY::Math {
 
 		if (!singular)
 		{
-			x = atan2(content[1][2], content[2][2]);
-			y = atan2(-content[0][2], sy);
-			z = atan2(content[0][1], content[0][0]);
+			x = std::atan2(content[1][2], content[2][2]);
+			y = std::atan2(-content[0][2], sy);
+			z = std::atan2(content[0][1], content[0][0]);
 		}
 		else
 		{
-			x = atan2(-content[2][1], content[1][1]);
-			y = atan2(-content[0][2], sy);
+			x = std::atan2(-content[2][1], content[1][1]);
+			y = std::atan2(-content[0][2], sy);
 			z = 0;
 		}
 
-		return -Vec3<U>(x, y, z) * RadToDeg;
+		return -Vec3f(x, y, z) * RadToDeg;
 	}
 
 	inline Mat4 Mat4::CreateInverseMatrix() const
@@ -1113,49 +1364,6 @@ namespace GALAXY::Math {
 		return print;
 	}
 
-	inline Quat Mat4::GetRotation() const
-	{
-		// Extracting the rotation from the matrix
-		float trace = content[0][0] + content[1][1] + content[2][2];
-
-		if (trace > 0)
-		{
-			float s = 0.5f / std::sqrt(trace + 1.0f);
-			float w = 0.25f / s;
-			float x = (content[1][2] - content[2][1]) * s;
-			float y = (content[2][0] - content[0][2]) * s;
-			float z = (content[0][1] - content[1][0]) * s;
-			return Quat(x, y, z, w).GetInverse();
-		}
-		else if (content[0][0] > content[1][1] && content[0][0] > content[2][2])
-		{
-			float s = 2.0f * std::sqrt(1.0f + content[0][0] - content[1][1] - content[2][2]);
-			float x = 0.25f * s;
-			float w = (content[1][2] - content[2][1]) / s;
-			float y = (content[1][0] + content[0][1]) / s;
-			float z = (content[2][0] + content[0][2]) / s;
-			return Quat(x, y, z, w).GetInverse();
-		}
-		else if (content[1][1] > content[2][2])
-		{
-			float s = 2.0f * std::sqrt(1.0f + content[1][1] - content[0][0] - content[2][2]);
-			float y = 0.25f * s;
-			float w = (content[2][0] - content[0][2]) / s;
-			float x = (content[1][0] + content[0][1]) / s;
-			float z = (content[2][1] + content[1][2]) / s;
-			return Quat(x, y, z, w).GetInverse();
-		}
-		else
-		{
-			float s = 2.0f * std::sqrt(1.0f + content[2][2] - content[0][0] - content[1][1]);
-			float w = (content[0][1] - content[1][0]) / s;
-			float x = (content[2][0] + content[0][2]) / s;
-			float y = (content[2][1] + content[1][2]) / s;
-			float z = 0.25f * s;
-			return Quat(x, y, z, w).GetInverse();
-		}
-	}
-
 #ifdef MATH_GLM_EXTENSION
 
 	Mat4::Mat4(const glm::mat4& mat)
@@ -1249,7 +1457,8 @@ namespace GALAXY::Math {
 		float wz = w * az;
 		return { (1.f - (yy + zz)) * a.x + (xy - wz) * a.y + (xz + wy) * a.z ,
 				(xy + wz) * a.x + (1.f - (xx + zz)) * a.y + (yz - wx) * a.z ,
-				(xz - wy) * a.x + (yz + wx) * a.y + (1.f - (xx + yy)) * a.z };
+				(xz - wy) * a.x + (yz + wx) * a.y + (1.f - (xx + yy)) * a.z
+};
 #else
 		Quat q = *this;
 		Vec3f const QuatVector(q.x, q.y, q.z);
@@ -1272,7 +1481,7 @@ namespace GALAXY::Math {
 
 	inline bool Quat::operator==(const Quat& a) const
 	{
-		return AlmostEqual(x, a.x) && AlmostEqual(y, a.y) 
+		return AlmostEqual(x, a.x) && AlmostEqual(y, a.y)
 			&& AlmostEqual(z, a.z) && AlmostEqual(w, a.w);
 	}
 
@@ -1504,23 +1713,23 @@ namespace GALAXY::Math {
 		// Calculate 3x3 matrix from orthonormal basis
 		Mat4 m;
 		m[0][0] = 1.0f - (yy + zz);
-		m[1][0] = xy + wz;
-		m[2][0] = xz - wy;
-		m[3][0] = 0.0F;
-
-		m[0][1] = xy - wz;
-		m[1][1] = 1.0f - (xx + zz);
-		m[2][1] = yz + wx;
-		m[3][1] = 0.0F;
-
-		m[0][2] = xz + wy;
-		m[1][2] = yz - wx;
-		m[2][2] = 1.0f - (xx + yy);
-		m[3][2] = 0.0F;
-
+		m[0][1] = xy + wz;
+		m[0][2] = xz - wy;
 		m[0][3] = 0.0F;
+
+		m[1][0] = xy - wz;
+		m[1][1] = 1.0f - (xx + zz);
+		m[1][2] = yz + wx;
 		m[1][3] = 0.0F;
+
+		m[2][0] = xz + wy;
+		m[2][1] = yz - wx;
+		m[2][2] = 1.0f - (xx + yy);
 		m[2][3] = 0.0F;
+
+		m[3][0] = 0.0F;
+		m[3][1] = 0.0F;
+		m[3][2] = 0.0F;
 		m[3][3] = 1.0F;
 
 		return m;

@@ -4,6 +4,10 @@
 #include "Maths.h"
 using namespace GALAXY::Math;
 
+#include <assert.h>
+
+#include <glm/gtx/matrix_decompose.hpp>
+
 VTEST(MATH_TEST)
 {
 #pragma region Vector 2 Tests
@@ -374,9 +378,71 @@ VTEST(MATH_TEST)
 		}
 		TEST(Methods)
 		{
+			Vec3f translation = Vec3f(1, 2, 3);
+			Mat4 translationMatrix = Mat4::CreateTranslationMatrix(translation);
+			glm::mat4 glmTranslationMatrix = glm::translate(glm::mat4(1), translation.ToGlm());
+			REQUIRE(translationMatrix == glmTranslationMatrix);
+
+			Vec3f euler(32.5f, -63.21f, 17.93f);
+			Mat4 rotationMatrix = Mat4::CreateRotationMatrix(euler);
+			glm::mat4 glmRotationMatrix = glm::eulerAngleXYZ(DegToRad * euler.x, DegToRad * euler.y, DegToRad * euler.z);
+			REQUIRE(rotationMatrix == glmRotationMatrix);
+
+			Quat eulerQuat = euler.ToQuaternion();
+			Mat4 quatRotationMatrix = Mat4::CreateRotationMatrix(eulerQuat);
+			glm::mat4 glmQuatRotationMatrix = glm::mat4(eulerQuat.ToGlm());
+			REQUIRE(quatRotationMatrix == glmQuatRotationMatrix);
+
+			Vec3f scale = Vec3f(1, 2, 3);
+			Mat4 scaleMatrix = Mat4::CreateScaleMatrix(scale);
+			glm::mat4 glmScaleMatrix = glm::scale(glm::mat4(1), scale.ToGlm());
+			REQUIRE(scaleMatrix == glmScaleMatrix);
+
+			Mat4 transformMatrix = Mat4::CreateTransformMatrix(translation, euler, scale);
+			glm::mat4 glmTransformMatrix = glmTranslationMatrix * glmRotationMatrix * glmScaleMatrix;
+			REQUIRE(transformMatrix == glmTransformMatrix);
+
+			Mat4 transformQuatMatrix = Mat4::CreateTransformMatrix(translation, eulerQuat, scale);
+			glm::mat4 glmTransformQuatMatrix = glmTranslationMatrix * glmQuatRotationMatrix * glmScaleMatrix;
+			REQUIRE(transformQuatMatrix == glmTransformQuatMatrix);
+
+			glm::vec3 glmGetTranslation;
+			glm::quat glmGetRotation;
+			glm::vec3 glmGetScale;
+			glm::vec3 glmSkew;
+			glm::vec4 glmPerspective;
+
+			Vec3f getTranslation;
+			Quat getRotation;
+			Vec3f getScale;
+
+			transformMatrix.DecomposeTransformMatrix(getTranslation, getRotation, getScale);
+			assert(glm::decompose(glmTransformMatrix, glmGetScale, glmGetRotation, glmGetTranslation, glmSkew, glmPerspective));
+			glmGetRotation = glm::conjugate(glmGetRotation);
+			REQUIRE(getTranslation == glmGetTranslation);
+			REQUIRE(getRotation == glmGetRotation);
+			REQUIRE(getScale == glmGetScale);
+
+			getTranslation = translationMatrix.GetTranslation();
+			REQUIRE(getTranslation == glmGetTranslation);
+
+
+			getRotation = transformMatrix.GetRotation();
+			REQUIRE(getRotation == glmGetRotation);
+
+			getScale = transformMatrix.GetScale();
+			REQUIRE(getScale == glmGetScale);
+
 			auto projectionMatrix = Mat4::CreateProjectionMatrix(90.f, 4.f / 3.f, 0.01f, 1000.f);
 			auto glmProjectMatrix = glm::perspective(DegToRad * 90.f, 4.f / 3.f, 0.01f, 1000.f);
 			REQUIRE(projectionMatrix == glmProjectMatrix);
+
+			//auto viewMatrix = Mat4::CreateViewMatrix(Vec3f(0, 0, 0), Vec3f(0, 0, -1), Vec3f(0, 1, 0));
+			//auto glmViewMatrix = glm::lookAt(Vec3f(0, 0, 0), Vec3f(0, 0, -1), Vec3f(0, 1, 0));
+
+			Mat4 inverse = transformMatrix.CreateInverseMatrix();
+			glm::mat4 glmInverse = glm::inverse(glmTransformMatrix);
+			REQUIRE(inverse == glmInverse);
 		}
 		TEST(Subscript Operators)
 		{
