@@ -774,31 +774,18 @@ namespace GALAXY::Math {
 	template<typename U>
 	inline Vec4<U> Mat4::operator*(const Vec4<U>& a) const
 	{
-		Vec4<U> out;
-		for (size_t i = 0; i < 4; i++)
-		{
-			float res = 0;
-			for (size_t k = 0; k < 4; k++) res += content[i][k] * a[k];
-			out[i] = res;
-		}
-		return out;
-	}
-
-	template<typename U>
-	inline Vec3<U> Mat4::operator*(const Vec3<U>& point) const
-	{
-		Vec3<U> res;
-		float w;
-		res.x = content[0][0] * point.x + content[1][0] * point.y + content[2][0] * point.z + content[3][0];
-		res.y = content[0][1] * point.x + content[1][1] * point.y + content[2][1] * point.z + content[3][1];
-		res.z = content[0][2] * point.x + content[1][2] * point.y + content[2][2] * point.z + content[3][2];
-		w = content[0][3] * point.x + content[1][3] * point.y + content[2][3] * point.z + content[3][3];
-
-		w = 1.f / w;
-		res.x *= w;
-		res.y *= w;
-		res.z *= w;
-		return res;
+		Vec4f Mov0(a[0]);
+		Vec4f Mov1(a[1]);
+		Vec4f Mul0 = content[0] * Mov0;
+		Vec4f Mul1 = content[1] * Mov1;
+		Vec4f Add0 = Mul0 + Mul1;
+		Vec4f Mov2(a[2]);
+		Vec4f Mov3(a[3]);
+		Vec4f Mul2 = content[2] * Mov2;
+		Vec4f Mul3 = content[3] * Mov3;
+		Vec4f Add1 = Mul2 + Mul3;
+		Vec4f Add2 = Add0 + Add1;
+		return Add2;
 	}
 
 	inline Mat4 Mat4::operator+(const Mat4& a) const
@@ -806,10 +793,7 @@ namespace GALAXY::Math {
 		Mat4 tmp;
 		for (size_t j = 0; j < 4; j++)
 		{
-			for (size_t i = 0; i < 4; i++)
-			{
-				tmp.content[j][i] = content[j][i] + a.content[j][i];
-			}
+			tmp.content[j] = content[j] + a.content[j];
 		}
 		return tmp;
 	}
@@ -839,9 +823,9 @@ namespace GALAXY::Math {
 		Mat4 projectionMatrix = Mat4();
 		projectionMatrix[0][0] = 1.0f / (_aspect * tanHalfFov);
 		projectionMatrix[1][1] = 1.0f / tanHalfFov;
-		projectionMatrix[2][2] = (_far + _near) / (_far - _near);
-		projectionMatrix[3][2] = 1.0f;
-		projectionMatrix[2][3] = -(2.0f * _far * _near) / (_far - _near);
+		projectionMatrix[2][2] = - (_far + _near) / (_far - _near);
+		projectionMatrix[2][3] = - 1.0f;
+		projectionMatrix[3][2] = -(2.0f * _far * _near) / (_far - _near);
 		projectionMatrix[3][3] = 0.0f;
 
 		return projectionMatrix;
@@ -881,20 +865,6 @@ namespace GALAXY::Math {
 	inline Mat4 Mat4::CreateTransformMatrix(const Vec3<U>& position, const Quat& rotation, const Vec3<U>& scale)
 	{
 		return CreateTranslationMatrix(position) * rotation.ToRotationMatrix() * CreateScaleMatrix(scale);
-	}
-
-	inline Mat4 Mat4::CreatePerspectiveProjectionMatrix(float Near, float Far, float fov)
-	{
-		float s = 1.0f / std::tan((fov / 2.0f) * DegToRad);
-		float param1 = -Far / (Far - Near);
-		float param2 = param1 * Near;
-		Mat4 out;
-		out[0][0] = s;
-		out[1][1] = s;
-		out[2][2] = param1;
-		out[3][2] = -1;
-		out[2][3] = param2;
-		return out;
 	}
 	/*
 

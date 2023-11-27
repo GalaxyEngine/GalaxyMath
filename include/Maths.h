@@ -347,10 +347,6 @@ namespace GALAXY::Math
 		template<typename U>
 		inline Vec4<U> operator*(const Vec4<U>& a) const;
 
-		// Transforms a position by this matrix, with a perspective divide. (generic)
-		template<typename U>
-		inline Vec3<U> operator*(const Vec3<U>& a) const;
-
 		inline Mat4 operator+(const Mat4& a) const;
 
 		inline Vec4f& operator[](size_t i);
@@ -375,8 +371,6 @@ namespace GALAXY::Math
 
 		template<typename U>
 		static inline Mat4 CreateTransformMatrix(const Vec3<U>& position, const Quat& rotation, const Vec3<U>& scale);
-
-		static inline Mat4 CreatePerspectiveProjectionMatrix(float Near, float Far, float fov);
 
 		template<typename U>
 		inline Vec3<U> GetPosition() const;

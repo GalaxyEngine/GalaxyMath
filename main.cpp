@@ -346,6 +346,9 @@ VTEST(MATH_TEST)
 		{
 			REQUIRE(Mat4(1) == Mat4::Identity());
 			REQUIRE(Mat4::Identity() == glm::mat4(1));
+		}
+		TEST(Comparison Operators)
+		{
 
 			auto glmMatrix = glm::mat4(
 				values[0], values[1], values[2], values[3],
@@ -353,16 +356,27 @@ VTEST(MATH_TEST)
 				values[8], values[9], values[10], values[11],
 				values[12], values[13], values[14], values[15]);
 
-			REQUIRE(matrix == glmMatrix);
+			REQUIRE(matrix != matrix2);
+			REQUIRE(matrix == Mat4(values));
 			REQUIRE(matrix.ToGlm() == glmMatrix);
 			REQUIRE(matrix == matrix.ToGlm());
-
+		}
+		TEST(Arithmetic Operators)
+		{
 			Mat4 multiply = matrix * matrix2;
 			glm::mat4 glmMultiply = matrix.ToGlm() * matrix2.ToGlm();
 			REQUIRE(multiply == glmMultiply);
 
 			Vec4f vec4Value = Vec4f(5, 6, 3.2f, 14.f);
 			REQUIRE(matrix * vec4Value == matrix.ToGlm() * vec4Value.ToGlm());
+
+			REQUIRE(matrix + matrix2 == matrix.ToGlm() + matrix2.ToGlm());
+		}
+		TEST(Methods)
+		{
+			auto projectionMatrix = Mat4::CreateProjectionMatrix(90.f, 4.f / 3.f, 0.01f, 1000.f);
+			auto glmProjectMatrix = glm::perspective(DegToRad * 90.f, 4.f / 3.f, 0.01f, 1000.f);
+			REQUIRE(projectionMatrix == glmProjectMatrix);
 		}
 		TEST(Subscript Operators)
 		{
