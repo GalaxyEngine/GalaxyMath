@@ -18,13 +18,6 @@ namespace GALAXY::Math {
 		return absoluteDiff <= diff;
 	}
 
-	template<>
-	bool AlmostEqual(int a, int b, float diff /*= 1e-5f*/)
-	{
-		return a == b;
-	}
-
-
 #pragma endregion
 
 #pragma region Vec2
