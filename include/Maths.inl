@@ -918,6 +918,7 @@ namespace GALAXY::Math {
 
 	inline void Mat4::DecomposeTransformMatrix(Vec3f& translation, Quat& rotation, Vec3f& scale) const
 	{
+		Vec4f Perspective;
 		Mat4 LocalMatrix(*this);
 
 		for (size_t i = 0; i < 4; ++i)
@@ -957,7 +958,7 @@ namespace GALAXY::Math {
 			Mat4 InversePerspectiveMatrix = PerspectiveMatrix.CreateInverseMatrix();//   inverse(PerspectiveMatrix, inversePerspectiveMatrix);
 			Mat4 TransposedInversePerspectiveMatrix = InversePerspectiveMatrix.GetTranspose();//   transposeMatrix4(inversePerspectiveMatrix, transposedInversePerspectiveMatrix);
 
-			Vec4f Perspective = TransposedInversePerspectiveMatrix * RightHandSide;
+			Perspective = TransposedInversePerspectiveMatrix * RightHandSide;
 			//  v4MulPointByMatrix(rightHandSide, transposedInversePerspectiveMatrix, perspectivePoint);
 
 			// Clear the perspective partition
@@ -967,8 +968,10 @@ namespace GALAXY::Math {
 		else
 		{
 			// No perspective.
-			Vec4f Perspective = Vec4f(0, 0, 0, 1);
+			Perspective = Vec4f(0, 0, 0, 1);
 		}
+
+		(void)(Perspective);
 
 		// Next take care of translation (easy).
 		translation = Vec3f(LocalMatrix[3]);
@@ -1630,25 +1633,6 @@ namespace GALAXY::Math {
 	inline float Quat::Dot(const Quat& a) const
 	{
 		return x * a.x + y * a.y + z * a.z + w * a.w;
-	}
-
-	static float NormalizeAngle(float angle)
-	{
-		float modAngle = std::fmod(angle, 360.0f);
-
-		if (modAngle < 0.0f)
-			return modAngle + 360.0f;
-		else
-			return modAngle;
-	}
-
-	template<typename U>
-	static Vec3<U> NormalizeAngles(Vec3<U>  angles)
-	{
-		angles.x = NormalizeAngle(angles.x);
-		angles.y = NormalizeAngle(angles.y);
-		angles.z = NormalizeAngle(angles.z);
-		return angles;
 	}
 
 	inline Vec3f Quat::ToEuler() const

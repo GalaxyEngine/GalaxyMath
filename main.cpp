@@ -469,9 +469,10 @@ VTEST(MATH_TEST)
 			glm::vec3 forward = euler.ToQuaternion().ToGlm() * Vec3f(0, 0, 1).ToGlm();
 			auto glmViewMatrix = glm::lookAt(translation.ToGlm(), translation.ToGlm() + forward, glm::vec3(0, 1, 0));
 			
-			Mat4(glmViewMatrix).Print();
-			viewMatrix.Print();
+			//Mat4(glmViewMatrix).Print();
+			//viewMatrix.Print();
 			
+			//TODO : FIX THIS
 			REQUIRE(viewMatrix == glmViewMatrix);
 
 			// Create Inverse matrix
