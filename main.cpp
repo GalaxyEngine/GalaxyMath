@@ -11,18 +11,6 @@ using namespace GALAXY::Math;
 
 VTEST(MATH_TEST)
 {
-	//TO_STRING_TYPE(
-	//	std::string(Vec2f::*)(int) const,
-	//	std::string(Vec3f::*)(int) const,
-	//	std::string(Vec4f::*)(int) const
-	//)
-	//	//TO_STRING_METHODS()
-	//std::string(Vec2f:: * method)(int) const = &Vec2f::ToString;
-	//std::string(Vec3f:: * method)(int) const = &Vec3f::ToString;
-	//std::string(Vec4f:: * method)(int) const = &Vec4f::ToString;
-
-	std::cout << COUNT_VARARGS(X, Y, Z, W) << std::endl;
-
 #pragma region Vector 2 Tests
 	NAMESPACE(Vector_2)
 	{
@@ -87,7 +75,7 @@ VTEST(MATH_TEST)
 
 			REQUIRE(value.GetNormalize() == glm::normalize(value.ToGlm()));
 
-			COMPARE(value.ToString(), std::string("1.540000, 2.321000"));
+			REQUIRE(value.ToString() == std::string("1.540000, 2.321000"));
 		}
 	}
 #pragma endregion
