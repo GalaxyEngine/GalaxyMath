@@ -867,12 +867,12 @@ namespace GALAXY::Math {
 		float t1 = rotation.x * DegToRad;
 		float t2 = rotation.y * DegToRad;
 		float t3 = rotation.z * DegToRad;
-		float c1 = glm::cos(-t1);
-		float c2 = glm::cos(-t2);
-		float c3 = glm::cos(-t3);
-		float s1 = glm::sin(-t1);
-		float s2 = glm::sin(-t2);
-		float s3 = glm::sin(-t3);
+		float c1 = std::cos(-t1);
+		float c2 = std::cos(-t2);
+		float c3 = std::cos(-t3);
+		float s1 = std::sin(-t1);
+		float s2 = std::sin(-t2);
+		float s3 = std::sin(-t3);
 
 		Mat4 Result;
 		Result[0][0] = c2 * c3;
