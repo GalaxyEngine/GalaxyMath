@@ -8,8 +8,21 @@ using namespace GALAXY::Math;
 
 #include <glm/gtx/matrix_decompose.hpp>
 
+
 VTEST(MATH_TEST)
 {
+	//TO_STRING_TYPE(
+	//	std::string(Vec2f::*)(int) const,
+	//	std::string(Vec3f::*)(int) const,
+	//	std::string(Vec4f::*)(int) const
+	//)
+	//	//TO_STRING_METHODS()
+	//std::string(Vec2f:: * method)(int) const = &Vec2f::ToString;
+	//std::string(Vec3f:: * method)(int) const = &Vec3f::ToString;
+	//std::string(Vec4f:: * method)(int) const = &Vec4f::ToString;
+
+	std::cout << COUNT_VARARGS(X, Y, Z, W) << std::endl;
+
 #pragma region Vector 2 Tests
 	NAMESPACE(Vector_2)
 	{
@@ -74,7 +87,7 @@ VTEST(MATH_TEST)
 
 			REQUIRE(value.GetNormalize() == glm::normalize(value.ToGlm()));
 
-			REQUIRE(value.ToString() == std::string("1.540000, 2.321000"));
+			COMPARE(value.ToString(), std::string("1.540000, 2.321000"));
 		}
 	}
 #pragma endregion
@@ -323,9 +336,11 @@ VTEST(MATH_TEST)
 			REQUIRE(quat1.GetConjugate() == glm::conjugate(quat1.ToGlm()));
 			COMPARE(quat1.Dot(quat2), glm::dot(quat1.ToGlm(), quat2.ToGlm()));
 
+			Vec3f previousEuler = euler;
 			euler = eulerQuat.ToEuler();
 			auto glmEuler = glm::eulerAngles(glmEulerQuat) * RadToDeg;
 			REQUIRE(euler == glmEuler);
+			//REQUIRE(euler == previousEuler);
 
 			REQUIRE(quat1.ToString() == std::string("1.000000, 2.000000, 3.000000, 4.000000"));
 		}
@@ -378,34 +393,41 @@ VTEST(MATH_TEST)
 		}
 		TEST(Methods)
 		{
+			// Translation
 			Vec3f translation = Vec3f(1, 2, 3);
 			Mat4 translationMatrix = Mat4::CreateTranslationMatrix(translation);
 			glm::mat4 glmTranslationMatrix = glm::translate(glm::mat4(1), translation.ToGlm());
 			REQUIRE(translationMatrix == glmTranslationMatrix);
 
+			// Rotation
 			Vec3f euler(32.5f, -63.21f, 17.93f);
 			Mat4 rotationMatrix = Mat4::CreateRotationMatrix(euler);
 			glm::mat4 glmRotationMatrix = glm::eulerAngleXYZ(DegToRad * euler.x, DegToRad * euler.y, DegToRad * euler.z);
 			REQUIRE(rotationMatrix == glmRotationMatrix);
 
+			// Quaternion
 			Quat eulerQuat = euler.ToQuaternion();
 			Mat4 quatRotationMatrix = Mat4::CreateRotationMatrix(eulerQuat);
 			glm::mat4 glmQuatRotationMatrix = glm::mat4(eulerQuat.ToGlm());
 			REQUIRE(quatRotationMatrix == glmQuatRotationMatrix);
 
+			// Scale
 			Vec3f scale = Vec3f(1, 2, 3);
 			Mat4 scaleMatrix = Mat4::CreateScaleMatrix(scale);
 			glm::mat4 glmScaleMatrix = glm::scale(glm::mat4(1), scale.ToGlm());
 			REQUIRE(scaleMatrix == glmScaleMatrix);
 
+			// Transform with euler
 			Mat4 transformMatrix = Mat4::CreateTransformMatrix(translation, euler, scale);
 			glm::mat4 glmTransformMatrix = glmTranslationMatrix * glmRotationMatrix * glmScaleMatrix;
 			REQUIRE(transformMatrix == glmTransformMatrix);
 
+			// Transform with quaternion
 			Mat4 transformQuatMatrix = Mat4::CreateTransformMatrix(translation, eulerQuat, scale);
 			glm::mat4 glmTransformQuatMatrix = glmTranslationMatrix * glmQuatRotationMatrix * glmScaleMatrix;
 			REQUIRE(transformQuatMatrix == glmTransformQuatMatrix);
 
+			// Decompose
 			glm::vec3 glmGetTranslation;
 			glm::quat glmGetRotation;
 			glm::vec3 glmGetScale;
@@ -417,32 +439,67 @@ VTEST(MATH_TEST)
 			Vec3f getScale;
 
 			transformMatrix.DecomposeTransformMatrix(getTranslation, getRotation, getScale);
+
 			assert(glm::decompose(glmTransformMatrix, glmGetScale, glmGetRotation, glmGetTranslation, glmSkew, glmPerspective));
 			glmGetRotation = glm::conjugate(glmGetRotation);
+
 			REQUIRE(getTranslation == glmGetTranslation);
 			REQUIRE(getRotation == glmGetRotation);
 			REQUIRE(getScale == glmGetScale);
 
-			getTranslation = translationMatrix.GetTranslation();
+			// Get Individuals components
+			// Get Translation
+			getTranslation = transformMatrix.GetTranslation();
 			REQUIRE(getTranslation == glmGetTranslation);
 
+			// Get Rotation
+			for (int i = 0; i < 3; i++)
+				scale[i] = glm::length(glm::vec3(glmTransformMatrix[i]));
+			const glm::mat3 rotMtx(
+				glm::vec3(glmTransformMatrix[0]) / scale[0],
+				glm::vec3(glmTransformMatrix[1]) / scale[1],
+				glm::vec3(glmTransformMatrix[2]) / scale[2]);
+
+			glm::quat glmGetRotation2 = glm::quat_cast(rotMtx);
+			glmGetRotation2 = glm::conjugate(glmGetRotation2);
+			glm::vec3 eulerGetRotation2 = glm::eulerAngles(glmGetRotation2) * RadToDeg;
+			glm::vec3 eulerGetRotation = glm::eulerAngles(glmGetRotation) * RadToDeg;
 
 			getRotation = transformMatrix.GetRotation();
 			REQUIRE(getRotation == glmGetRotation);
 
+			// Get Scale
 			getScale = transformMatrix.GetScale();
 			REQUIRE(getScale == glmGetScale);
 
+			// Create Projection Matrix
 			auto projectionMatrix = Mat4::CreateProjectionMatrix(90.f, 4.f / 3.f, 0.01f, 1000.f);
 			auto glmProjectMatrix = glm::perspective(DegToRad * 90.f, 4.f / 3.f, 0.01f, 1000.f);
 			REQUIRE(projectionMatrix == glmProjectMatrix);
 
-			//auto viewMatrix = Mat4::CreateViewMatrix(Vec3f(0, 0, 0), Vec3f(0, 0, -1), Vec3f(0, 1, 0));
-			//auto glmViewMatrix = glm::lookAt(Vec3f(0, 0, 0), Vec3f(0, 0, -1), Vec3f(0, 1, 0));
+			auto viewMatrix = Mat4::CreateViewMatrix(translation, euler.ToQuaternion());
+			glm::vec3 forward = euler.ToQuaternion().ToGlm() * Vec3f(0, 0, 1).ToGlm();
+			auto glmViewMatrix = glm::lookAt(translation.ToGlm(), translation.ToGlm() + forward, glm::vec3(0, 1, 0));
+			
+			Mat4(glmViewMatrix).Print();
+			viewMatrix.Print();
+			
+			REQUIRE(viewMatrix == glmViewMatrix);
 
+			// Create Inverse matrix
 			Mat4 inverse = transformMatrix.CreateInverseMatrix();
 			glm::mat4 glmInverse = glm::inverse(glmTransformMatrix);
 			REQUIRE(inverse == glmInverse);
+
+			// Create Transpose matrix
+			Mat4 transpose = transformMatrix.GetTranspose();
+			glm::mat4 glmTranspose = glm::transpose(glmTransformMatrix);
+			REQUIRE(transpose == glmTranspose);
+
+			// Get Determinant
+			float determinant = transformMatrix.GetDeterminant(4);
+			float glmDeterminant = glm::determinant(glmTransformMatrix);
+			REQUIRE(AlmostEqual(determinant, glmDeterminant));
 		}
 		TEST(Subscript Operators)
 		{

@@ -359,6 +359,8 @@ namespace GALAXY::Math
 		static Mat4 Identity() { return { 1.f }; }
 
 		static inline Mat4 CreateProjectionMatrix(float _fov, float _aspect, float _near, float _far);
+		
+		static inline Mat4 CreateViewMatrix(const Vec3f position, const Quat& rotation);
 
 		template<typename U>
 		static inline Mat4 CreateTranslationMatrix(const Vec3<U>& translation);
@@ -381,8 +383,6 @@ namespace GALAXY::Math
 
 		inline Quat GetRotation() const;
 
-		inline Vec3f GetEulerRotation() const;
-
 		inline Vec3f GetScale() const;
 
 		inline Mat4 CreateInverseMatrix() const;
@@ -398,6 +398,8 @@ namespace GALAXY::Math
 		inline void Print() const;
 
 		inline std::string ToString() const;
+
+		inline Mat4 ToRotationMatrix() const;
 
 		// Transforms a position by this matrix, without a perspective divide. (fast)
 		template<typename U>

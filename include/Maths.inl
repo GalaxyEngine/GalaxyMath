@@ -841,6 +841,13 @@ namespace GALAXY::Math {
 		return projectionMatrix;
 	}
 
+	inline Mat4 Mat4::CreateViewMatrix(const Vec3f position, const Quat& rotation)
+	{
+		Mat4 out = Mat4::CreateTransformMatrix(position, rotation, Vec3f(1, 1, -1));
+		out = out.CreateInverseMatrix();
+		return out;
+	}
+
 	template<typename U>
 	inline Mat4 Mat4::CreateTranslationMatrix(const Vec3<U>& translation)
 	{
@@ -1101,7 +1108,8 @@ namespace GALAXY::Math {
 	inline Quat Mat4::GetRotation() const
 	{
 		// !! Work only with rotation matrix
-		Mat4 temp = *this;
+		Mat4 temp = ToRotationMatrix();
+
 		// Extracting the rotation from the matrix
 		float trace = temp.content[0][0] + temp.content[1][1] + temp.content[2][2];
 
@@ -1141,30 +1149,6 @@ namespace GALAXY::Math {
 			float z = 0.25f * s;
 			return Quat(x, y, z, w).GetInverse();
 		}
-	}
-
-	inline Vec3f Mat4::GetEulerRotation() const
-	{
-		float sy = std::sqrt(content[0][0] * content[0][0] + content[0][1] * content[0][1]);
-
-		bool singular = sy < 1e-6;
-
-		float x, y, z;
-
-		if (!singular)
-		{
-			x = std::atan2(content[1][2], content[2][2]);
-			y = std::atan2(-content[0][2], sy);
-			z = std::atan2(content[0][1], content[0][0]);
-		}
-		else
-		{
-			x = std::atan2(-content[2][1], content[1][1]);
-			y = std::atan2(-content[0][2], sy);
-			z = 0;
-		}
-
-		return -Vec3f(x, y, z) * RadToDeg;
 	}
 
 	inline Mat4 Mat4::CreateInverseMatrix() const
@@ -1362,6 +1346,17 @@ namespace GALAXY::Math {
 			print += "}";
 		}
 		return print;
+	}
+
+	inline Mat4 Mat4::ToRotationMatrix() const
+	{		
+		// Convert to rotation Matrix
+		Vec3f scale = GetScale();
+		return Mat4(
+			Vec4f(Vec3f(content[0]) / scale[0], 0),
+			Vec4f(Vec3f(content[1]) / scale[1], 0),
+			Vec4f(Vec3f(content[2]) / scale[2], 0),
+			Vec4f(0));
 	}
 
 #ifdef MATH_GLM_EXTENSION
