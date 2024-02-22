@@ -1,5 +1,6 @@
 #include "include/VTest.hpp"
 
+#define GLM_ENABLE_EXPERIMENTAL
 #define MATH_GLM_EXTENSION
 #include "Maths.h"
 using namespace GALAXY::Math;
@@ -16,7 +17,8 @@ VTEST(MATH_TEST)
 	{
 		TEST(Constructors)
 		{
-			REQUIRE(Vec2f(1.f) == Vec2d(1, 1));
+			constexpr Vec2f v1 = Vec2f(1.f);
+			REQUIRE(v1 == Vec2d(1, 1));
 			REQUIRE(Vec2f(Vec3f(3.5f, 6.6f, 1.2f)) == Vec2d(3.5, 6.6));
 			REQUIRE(Vec2f("2.5, 1.33") == Vec2d(2.5, 1.33));
 		}
@@ -85,7 +87,8 @@ VTEST(MATH_TEST)
 	{
 		TEST(Constructors)
 		{
-			REQUIRE(Vec3f(1.f) == Vec3d(1, 1, 1));
+			constexpr Vec3f v1 = Vec3f(1.f);
+			REQUIRE(v1 == Vec3d(1, 1, 1));
 			REQUIRE(Vec3f(Vec2d(3.5f, 6.6f), 0.1f) == Vec3d(3.5, 6.6, 0.1));
 			REQUIRE(Vec3f("2.5, 1.33, 6.75") == Vec3d(2.5, 1.33, 6.75));
 			REQUIRE(Vec3i("2, 1, 6") == Vec3d(2, 1, 6));
@@ -132,7 +135,7 @@ VTEST(MATH_TEST)
 		}
 		TEST(Methods)
 		{
-			Vec3f value(1.54f, 2.321f, 23.478f);
+			constexpr Vec3f value(1.54f, 2.321f, 23.478f);
 			COMPARE(value.LengthSquared(), glm::length2(value.ToGlm()));
 			COMPARE(value.Length(), glm::length(value.ToGlm()));
 
@@ -169,7 +172,8 @@ VTEST(MATH_TEST)
 	{
 		TEST(Constructors)
 		{
-			REQUIRE(Vec4f(1.f) == Vec4d(1, 1, 1, 1));
+			constexpr Vec4f v1 = Vec4f(1.f);
+			REQUIRE(v1 == Vec4d(1, 1, 1, 1));
 			REQUIRE(Vec4f(Vec3d(3.5f, 6.6f, 7.5), 0.1f) == Vec4d(3.5, 6.6, 7.5, 0.1f));
 			REQUIRE(Vec4f("2.5, 1.33, 6.75, 2.32") == Vec4d(2.5, 1.33, 6.75, 2.32));
 			REQUIRE(Vec4i("2, 1, 6, 5") == Vec4d(2, 1, 6, 5));
@@ -239,8 +243,9 @@ VTEST(MATH_TEST)
 	{
 		TEST(Constructors)
 		{
+			constexpr Quat quat = Quat(1);
 			REQUIRE(Quat() == Quat(0, 0, 0, 1));
-			REQUIRE(Quat(1) == Quat(1, 1, 1, 1));
+			REQUIRE(quat == Quat(1, 1, 1, 1));
 			REQUIRE(Quat(1, 2, 3) == Quat(1, 2, 3, 1));
 			REQUIRE(Quat("1, 2, 3, 1") == Quat(1, 2, 3, 1));
 			REQUIRE(Quat(Vec3f(1, 2, 3)) == Quat(1, 2, 3, 1));

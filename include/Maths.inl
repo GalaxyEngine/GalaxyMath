@@ -23,7 +23,7 @@ namespace GALAXY::Math {
 #pragma region Vec2
 	template<typename T>
 	template<typename U>
-	inline Vec2<T>::Vec2(const Vec2<U>& a)
+	inline constexpr Vec2<T>::Vec2(const Vec2<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -31,14 +31,14 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T>::Vec2(const Vec3<U>& a)
+	inline constexpr Vec2<T>::Vec2(const Vec3<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
 	}
 
 	template<typename T>
-	inline Vec2<T>::Vec2(const std::string& str)
+	inline constexpr Vec2<T>::Vec2(const std::string& str)
 	{
 		std::istringstream ss(str);
 
@@ -48,7 +48,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T> Vec2<T>::operator=(const Vec2<U>& a)
+	inline constexpr Vec2<T> Vec2<T>::operator=(const Vec2<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -57,14 +57,14 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T> Vec2<T>::operator=(const Vec3<U>& a)
+	inline constexpr Vec2<T> Vec2<T>::operator=(const Vec3<U>& a)
 	{
 		return Vec2(a);
 	}
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T> Vec2<T>::operator+(const Vec2<U>& a) const
+	inline constexpr Vec2<T> Vec2<T>::operator+(const Vec2<U>& a) const
 	{
 		return { static_cast<T>(x + a.x), static_cast<T>(y + a.y) };
 	}
@@ -78,7 +78,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T> Vec2<T>::operator-(const Vec2<U>& a) const
+	inline constexpr Vec2<T> Vec2<T>::operator-(const Vec2<U>& a) const
 	{
 		return { static_cast<T>(x - a.x), static_cast<T>(y - a.y) };
 	}
@@ -91,21 +91,21 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline Vec2<T> Vec2<T>::operator-(void) const
+	inline constexpr Vec2<T> Vec2<T>::operator-(void) const
 	{
 		return { -x, -y };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T> Vec2<T>::operator*(const U& a) const
+	inline constexpr Vec2<T> Vec2<T>::operator*(const U& a) const
 	{
 		return { static_cast<T>(x * a), static_cast<T>(y * a) };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T> Vec2<T>::operator*(const Vec2<U>& a) const
+	inline constexpr Vec2<T> Vec2<T>::operator*(const Vec2<U>& a) const
 	{
 		return { static_cast<T>(x * a.x), static_cast<T>(y * a.y) };
 	}
@@ -126,7 +126,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec2<T> Vec2<T>::operator/(const U& a) const
+	inline constexpr Vec2<T> Vec2<T>::operator/(const U& a) const
 	{
 		return { x / a, y / a };
 	}
@@ -140,7 +140,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline bool Vec2<T>::operator==(const Vec2<U>& a) const
+	inline constexpr bool Vec2<T>::operator==(const Vec2<U>& a) const
 	{
 		// "this" vector has the authority for the type comparison
 		return AlmostEqual(x, static_cast<T>(a.x)) && AlmostEqual(y, static_cast<T>(a.y));
@@ -148,7 +148,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline bool Vec2<T>::operator==(const Vec3<U>& b) const
+	inline constexpr bool Vec2<T>::operator==(const Vec3<U>& b) const
 	{
 		// "this" vector has the authority for the type comparison
 		return AlmostEqual(x, static_cast<T>(b.x)) && AlmostEqual(y, static_cast<T>(b.y));
@@ -156,7 +156,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	bool Vec2<T>::operator!=(const Vec2<U>& a) const
+	bool constexpr Vec2<T>::operator!=(const Vec2<U>& a) const
 	{
 		// "this" vector has the authority for the type comparison
 		return !AlmostEqual(x, static_cast<T>(a.x)) || !AlmostEqual(y, static_cast<T>(a.y));
@@ -164,7 +164,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline bool Vec2<T>::operator!=(const Vec3<U>& b) const
+	inline constexpr bool Vec2<T>::operator!=(const Vec3<U>& b) const
 	{
 		return !AlmostEqual(x, static_cast<T>(b.x)) || !AlmostEqual(y, static_cast<T>(b.y));
 	}
@@ -264,7 +264,7 @@ namespace GALAXY::Math {
 #pragma region Vec3
 
 	template<typename T>
-	inline Vec3<T>::Vec3(const std::string& str)
+	inline constexpr Vec3<T>::Vec3(const std::string& str)
 	{
 		std::istringstream ss(str);
 
@@ -274,7 +274,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec3<T>::Vec3(const Vec2<U>& xy, T _z)
+	inline constexpr Vec3<T>::Vec3(const Vec2<U>& xy, T _z)
 	{
 		x = static_cast<T>(xy.x);
 		y = static_cast<T>(xy.y);
@@ -283,7 +283,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec3<T>::Vec3(const Vec3<U>& a)
+	inline constexpr Vec3<T>::Vec3(const Vec3<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -292,7 +292,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec3<T>::Vec3(const Vec4<U>& a)
+	inline constexpr Vec3<T>::Vec3(const Vec4<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -301,14 +301,14 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec3<T> Vec3<T>::operator*(const U& b) const
+	inline constexpr Vec3<T> Vec3<T>::operator*(const U& b) const
 	{
 		return { static_cast<T>(x * b), static_cast<T>(y * b), static_cast<T>(z * b) };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline Vec3<T> Vec3<T>::operator/(const U& b) const
+	inline constexpr Vec3<T> Vec3<T>::operator/(const U& b) const
 	{
 		return { x / b, y / b, z / b };
 	}
@@ -328,7 +328,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline Vec3<T> Vec3<T>::operator+(const Vec3& b) const
+	inline constexpr Vec3<T> Vec3<T>::operator+(const Vec3& b) const
 	{
 		return { x + b.x, y + b.y, z + b.z };
 	}
@@ -340,13 +340,13 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline Vec3<T> Vec3<T>::operator-(const Vec3& b) const
+	inline constexpr Vec3<T> Vec3<T>::operator-(const Vec3& b) const
 	{
 		return { x - b.x, y - b.y, z - b.z };
 	}
 
 	template<typename T>
-	inline Vec3<T> Vec3<T>::operator-(void) const
+	inline constexpr Vec3<T> Vec3<T>::operator-(void) const
 	{
 		return { -x, -y, -z };
 	}
@@ -359,7 +359,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec3<T> Vec3<T>::operator*(const Vec3<U>& b) const
+	inline constexpr Vec3<T> Vec3<T>::operator*(const Vec3<U>& b) const
 	{
 		return { static_cast<T>(x * b.x), static_cast<T>(y * b.y), static_cast<T>(z * b.z) };
 	}
@@ -372,14 +372,14 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline bool Vec3<T>::operator==(const Vec3<U>& a) const
+	inline constexpr bool Vec3<T>::operator==(const Vec3<U>& a) const
 	{
 		return AlmostEqual(x, static_cast<T>(a.x)) && AlmostEqual(y, static_cast<T>(a.y)) && AlmostEqual(z, static_cast<T>(a.z));
 	}
 
 	template<typename T>
 	template<typename U>
-	inline bool Vec3<T>::operator!=(const Vec3<U>& a) const
+	inline constexpr bool Vec3<T>::operator!=(const Vec3<U>& a) const
 	{
 		return !AlmostEqual(x, static_cast<T>(a.x)) || !AlmostEqual(y, static_cast<T>(a.y)) || !AlmostEqual(z, static_cast<T>(a.z));
 	}
@@ -506,7 +506,7 @@ namespace GALAXY::Math {
 
 #pragma region Vec4
 	template<typename T>
-	inline Vec4<T>::Vec4(const std::string& str)
+	inline constexpr Vec4<T>::Vec4(const std::string& str)
 	{
 		std::istringstream ss(str);
 
@@ -516,7 +516,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec4<T>::Vec4(const Vec2<U>& xy, T _z /*= 0*/, T _w /*= 0*/)
+	inline constexpr Vec4<T>::Vec4(const Vec2<U>& xy, T _z /*= 0*/, T _w /*= 0*/)
 	{
 		x = static_cast<T>(xy.x);
 		y = static_cast<T>(xy.y);
@@ -526,7 +526,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec4<T>::Vec4(const Vec3<U>& xyz, T _w /*= 0*/)
+	inline constexpr Vec4<T>::Vec4(const Vec3<U>& xyz, T _w /*= 0*/)
 	{
 		x = static_cast<T>(xyz.x);
 		y = static_cast<T>(xyz.y);
@@ -536,7 +536,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec4<T>::Vec4(const Vec4<U>& a)
+	inline constexpr Vec4<T>::Vec4(const Vec4<U>& a)
 	{
 		x = static_cast<T>(a.x);
 		y = static_cast<T>(a.y);
@@ -546,7 +546,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline Vec4<T> Vec4<T>::operator=(const Vec3<U>& b)
+	inline constexpr Vec4<T> Vec4<T>::operator=(const Vec3<U>& b)
 	{
 		this->x = static_cast<T>(b.x);
 		this->y = static_cast<T>(b.y);
@@ -555,35 +555,35 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline Vec4<T> Vec4<T>::operator+(const Vec4& b) const {
+	inline constexpr Vec4<T> Vec4<T>::operator+(const Vec4& b) const {
 		return { x + b.x, y + b.y, z + b.z, w + b.w };
 	}
 
 	template<typename T>
-	inline Vec4<T> Vec4<T>::operator-(const Vec4& b) const {
+	inline constexpr Vec4<T> Vec4<T>::operator-(const Vec4& b) const {
 		return { x - b.x, y - b.y, z - b.z, w - b.w };
 	}
 
 	template<typename T>
-	inline Vec4<T> Vec4<T>::operator-(void) const {
+	inline constexpr Vec4<T> Vec4<T>::operator-(void) const {
 		return { -x, -y, -z, -w };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline Vec4<T> Vec4<T>::operator*(const Vec4<U>& b) const {
+	inline constexpr Vec4<T> Vec4<T>::operator*(const Vec4<U>& b) const {
 		return Vec4(x * b.x, y * b.y, z * b.z, w * b.w);
 	}
 
 	template<typename T>
 	template<typename U>
-	inline Vec4<T> Vec4<T>::operator*(const U& b) const {
+	inline constexpr Vec4<T> Vec4<T>::operator*(const U& b) const {
 		return { x * b, y * b, z * b, w * b };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline Vec4<T> Vec4<T>::operator/(const U& b) const {
+	inline constexpr Vec4<T> Vec4<T>::operator/(const U& b) const {
 		return { x / b, y / b, z / b, w / b };
 	}
 
@@ -629,7 +629,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline T& Vec4<T>::operator[](const size_t a) {
+	inline constexpr T& Vec4<T>::operator[](const size_t a) {
 		if (a >= 4)
 			return x;
 		return *((&x) + a);
@@ -719,7 +719,7 @@ namespace GALAXY::Math {
 #pragma endregion
 
 #pragma  region Mat4
-	inline Mat4::Mat4(float diagonal)
+	inline constexpr Mat4::Mat4(float diagonal)
 	{
 		content[0][0] = 1;
 		content[1][1] = 1;
@@ -727,7 +727,7 @@ namespace GALAXY::Math {
 		content[3][3] = 1;
 	}
 
-	inline Mat4::Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3)
+	inline constexpr Mat4::Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3)
 	{
 		content[0] = m0;
 		content[1] = m1;
@@ -736,7 +736,7 @@ namespace GALAXY::Math {
 	}
 
 
-	inline Mat4::Mat4(const float* data)
+	inline constexpr Mat4::Mat4(const float* data)
 	{
 		for (size_t i = 0; i < 4; ++i) {
 			for (size_t j = 0; j < 4; ++j) {
@@ -745,7 +745,7 @@ namespace GALAXY::Math {
 		}
 	}
 
-	inline Mat4::Mat4(const double* data)
+	inline constexpr Mat4::Mat4(const double* data)
 	{
 		for (size_t i = 0; i < 4; ++i) {
 			for (size_t j = 0; j < 4; ++j) {
@@ -754,7 +754,7 @@ namespace GALAXY::Math {
 		}
 	}
 
-	inline Mat4 Mat4::operator*(const Mat4& a) const
+	inline constexpr Mat4 Mat4::operator*(const Mat4& a) const
 	{
 		Vec4f SrcA0 = this->content[0];
 		Vec4f SrcA1 = this->content[1];
@@ -775,7 +775,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename U>
-	inline Vec4<U> Mat4::operator*(const Vec4<U>& a) const
+	inline constexpr Vec4<U> Mat4::operator*(const Vec4<U>& a) const
 	{
 		Vec4f Mov0(a[0]);
 		Vec4f Mov1(a[1]);
@@ -791,7 +791,7 @@ namespace GALAXY::Math {
 		return Add2;
 	}
 
-	inline Mat4 Mat4::operator+(const Mat4& a) const
+	inline constexpr Mat4 Mat4::operator+(const Mat4& a) const
 	{
 		Mat4 tmp;
 		for (size_t j = 0; j < 4; j++)
@@ -801,12 +801,12 @@ namespace GALAXY::Math {
 		return tmp;
 	}
 
-	inline Vec4f& Mat4::operator[](const size_t i)
+	inline constexpr Vec4f& Mat4::operator[](const size_t i)
 	{
 		return content[i];
 	}
 
-	inline bool Mat4::operator==(const Mat4& b) const
+	inline constexpr bool Mat4::operator==(const Mat4& b) const
 	{
 		for (int i = 0; i < 4; i++)
 		{
@@ -1406,17 +1406,17 @@ namespace GALAXY::Math {
 		ss >> this->x >> discard >> this->y >> discard >> this->z >> discard >> this->w;
 	}
 
-	inline Quat Quat::operator+(const Quat& a) const
+	inline constexpr Quat Quat::operator+(const Quat& a) const
 	{
 		return Quat(x + a.x, y + a.y, z + a.z, w + a.w);
 	}
 
-	inline Quat Quat::operator-(const Quat& a) const
+	inline constexpr Quat Quat::operator-(const Quat& a) const
 	{
 		return Quat(x - a.x, y - a.y, z - a.z, w - a.w);
 	}
 
-	inline Quat Quat::operator*(const Quat& a) const
+	inline constexpr Quat Quat::operator*(const Quat& a) const
 	{
 		return Quat(
 			w * a.x + x * a.w + y * a.z - z * a.y,
@@ -1425,12 +1425,12 @@ namespace GALAXY::Math {
 			w * a.w - x * a.x - y * a.y - z * a.z);
 	}
 
-	inline Quat Quat::operator*(float a) const
+	inline constexpr Quat Quat::operator*(float a) const
 	{
 		return Quat(this->x * a, this->y * a, this->z * a, this->w * a);
 	}
 	template<typename U>
-	inline Vec3<U> Quat::operator*(const Vec3<U>& v) const
+	inline constexpr Vec3<U> Quat::operator*(const Vec3<U>& v) const
 	{
 #if 0
 		Vec3<U> vector;
@@ -1490,7 +1490,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename U>
-	inline Quat Quat::AngleAxis(float angle, Vec3<U> axis)
+	inline constexpr Quat Quat::AngleAxis(float angle, Vec3<U> axis)
 	{
 		float rad = angle * DegToRad;
 		axis.Normalize();
@@ -1503,7 +1503,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename U>
-	Quat Quat::FromEuler(const Vec3<U>& euler)
+	inline constexpr Quat Quat::FromEuler(const Vec3<U>& euler)
 	{
 		return euler.ToQuaternion();
 	}

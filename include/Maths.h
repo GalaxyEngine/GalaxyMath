@@ -30,36 +30,36 @@ namespace GALAXY::Math
 	public:
 		T x = 0, y = 0;
 
-		inline Vec2() : x(0), y(0) {}
+		inline constexpr Vec2() : x(0), y(0) {}
 
-		explicit inline Vec2(T _xy) : x(_xy), y(_xy) {}
+		explicit inline constexpr Vec2(T _xy) : x(_xy), y(_xy) {}
 
-		inline Vec2(T _x, T _y) : x(_x), y(_y) {}
-
-		template<typename U>
-		inline Vec2(const Vec3<U>& a);
+		inline constexpr Vec2(T _x, T _y) : x(_x), y(_y) {}
 
 		template<typename U>
-		inline Vec2(const Vec2<U>& a);
-
-		inline Vec2(const std::string& str);
+		inline constexpr Vec2(const Vec3<U>& a);
 
 		template<typename U>
-		inline Vec2 operator=(const Vec2<U>& a);
-		template<typename U>
-		inline Vec2 operator=(const Vec3<U>& a);
+		inline constexpr Vec2(const Vec2<U>& a);
+
+		inline constexpr Vec2(const std::string& str);
 
 		template<typename U>
-		inline Vec2 operator+(const Vec2<U>& a) const;
+		inline constexpr Vec2 operator=(const Vec2<U>& a);
 		template<typename U>
-		inline Vec2 operator-(const Vec2<U>& a) const;
-		inline Vec2 operator-(void) const;
+		inline constexpr Vec2 operator=(const Vec3<U>& a);
+
 		template<typename U>
-		inline Vec2 operator*(const U& a) const;
+		inline constexpr Vec2 operator+(const Vec2<U>& a) const;
 		template<typename U>
-		inline Vec2 operator*(const Vec2<U>& a) const;
+		inline constexpr Vec2 operator-(const Vec2<U>& a) const;
+		inline constexpr Vec2 operator-(void) const;
 		template<typename U>
-		inline Vec2 operator/(const U& a) const;
+		inline constexpr Vec2 operator*(const U& a) const;
+		template<typename U>
+		inline constexpr Vec2 operator*(const Vec2<U>& a) const;
+		template<typename U>
+		inline constexpr Vec2 operator/(const U& a) const;
 
 		template<typename U>
 		inline void operator+=(const Vec2<U>& a);
@@ -73,13 +73,13 @@ namespace GALAXY::Math
 		inline void operator/=(const U& a);
 
 		template<typename U>
-		inline bool operator==(const Vec2<U>& b) const;
+		inline constexpr bool operator==(const Vec2<U>& b) const;
 		template<typename U>
-		inline bool operator==(const Vec3<U>& b) const;
+		inline constexpr bool operator==(const Vec3<U>& b) const;
 		template<typename U>
-		inline bool operator!=(const Vec2<U>& b) const;
+		inline constexpr bool operator!=(const Vec2<U>& b) const;
 		template<typename U>
-		inline bool operator!=(const Vec3<U>& b) const;
+		inline constexpr bool operator!=(const Vec3<U>& b) const;
 
 		inline T& operator[](const size_t a);
 
@@ -124,32 +124,32 @@ namespace GALAXY::Math
 	public:
 		T x = 0, y = 0, z = 0;
 
-		inline Vec3() : x(0), y(0), z(0) {}
+		inline constexpr Vec3() : x(0), y(0), z(0) {}
 
-		inline Vec3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
+		inline constexpr Vec3(T _x, T _y, T _z) : x(_x), y(_y), z(_z) {}
 
-		explicit inline Vec3(T xyz) : x(xyz), y(xyz), z(xyz) {}
+		explicit inline constexpr Vec3(T xyz) : x(xyz), y(xyz), z(xyz) {}
 
-		inline Vec3(const std::string& str);
-
-		template<typename U>
-		inline Vec3(const Vec2<U>& xy, T _z = 0);
+		inline constexpr Vec3(const std::string& str);
 
 		template<typename U>
-		inline Vec3(const Vec3<U>& a);
+		inline constexpr Vec3(const Vec2<U>& xy, T _z = 0);
 
 		template<typename U>
-		inline Vec3(const Vec4<U>& a);
+		inline constexpr Vec3(const Vec3<U>& a);
 
-		inline Vec3 operator+(const Vec3& b) const;
-		inline Vec3 operator-(const Vec3& b) const;
-		inline Vec3 operator-(void) const;
 		template<typename U>
-		inline Vec3 operator*(const Vec3<U>& b) const;
+		inline constexpr Vec3(const Vec4<U>& a);
+
+		inline constexpr Vec3 operator+(const Vec3& b) const;
+		inline constexpr Vec3 operator-(const Vec3& b) const;
+		inline constexpr Vec3 operator-(void) const;
 		template<typename U>
-		inline Vec3 operator*(const U& b) const;
+		inline constexpr Vec3 operator*(const Vec3<U>& b) const;
 		template<typename U>
-		inline Vec3 operator/(const U& b) const;
+		inline constexpr Vec3 operator*(const U& b) const;
+		template<typename U>
+		inline constexpr Vec3 operator/(const U& b) const;
 
 		inline void operator+=(const Vec3& b);
 		inline void operator-=(const Vec3& b);
@@ -160,23 +160,23 @@ namespace GALAXY::Math
 		inline void operator/=(const U& b);
 
 		template<typename U>
-		inline bool operator==(const Vec3<U>& b) const;
+		inline constexpr bool operator==(const Vec3<U>& b) const;
 		template<typename U>
-		inline bool operator!=(const Vec3<U>& b) const;
+		inline constexpr bool operator!=(const Vec3<U>& b) const;
 
 		inline T& operator[](const size_t a);
 		inline const T& operator[](const size_t a) const;
 
-		static inline Vec3 Right() { return { 1, 0, 0 }; }
-		static inline Vec3 Up() { return { 0, 1, 0 }; }
-		static inline Vec3 Forward() { return { 0, 0, -1 }; }
+		static inline constexpr Vec3 Right() { return { 1, 0, 0 }; }
+		static inline constexpr Vec3 Up() { return { 0, 1, 0 }; }
+		static inline constexpr Vec3 Forward() { return { 0, 0, -1 }; }
 
-		static inline Vec3 Left() { return { -1, 0, 0 }; }
-		static inline Vec3 Down() { return { 0, -1, 0 }; }
-		static inline Vec3 Back() { return { 0, 0, 1 }; }
+		static inline constexpr Vec3 Left() { return { -1, 0, 0 }; }
+		static inline constexpr Vec3 Down() { return { 0, -1, 0 }; }
+		static inline constexpr Vec3 Back() { return { 0, 0, 1 }; }
 
-		static inline Vec3 Zero() { return { 0, 0, 0 }; }
-		static inline Vec3 One() { return { 1, 1, 1 }; }
+		static inline constexpr Vec3 Zero() { return { 0, 0, 0 }; }
+		static inline constexpr Vec3 One() { return { 1, 1, 1 }; }
 
 		inline T LengthSquared() const;
 
@@ -219,35 +219,35 @@ namespace GALAXY::Math
 	public:
 		T x = 0, y = 0, z = 0, w = 0;
 
-		inline Vec4() : x(0), y(0), z(0), w(0) {}
+		inline constexpr Vec4() : x(0), y(0), z(0), w(0) {}
 
-		inline Vec4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
+		inline constexpr Vec4(T _x, T _y, T _z, T _w) : x(_x), y(_y), z(_z), w(_w) {}
 
-		explicit inline Vec4(T xyzw) : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
-
-		template<typename U>
-		inline Vec4(const Vec2<U>& xy, T _z = 0, T _w = 0);
+		explicit inline constexpr Vec4(T xyzw) : x(xyzw), y(xyzw), z(xyzw), w(xyzw) {}
 
 		template<typename U>
-		inline Vec4(const Vec3<U>& xyz, T _w = 0);
+		inline constexpr Vec4(const Vec2<U>& xy, T _z = 0, T _w = 0);
 
 		template<typename U>
-		inline Vec4(const Vec4<U>& a);
-
-		inline Vec4(const std::string& str);
+		inline constexpr Vec4(const Vec3<U>& xyz, T _w = 0);
 
 		template<typename U>
-		inline Vec4 operator=(const Vec3<U>& b);
+		inline constexpr Vec4(const Vec4<U>& a);
 
-		inline Vec4 operator+(const Vec4& b) const;
-		inline Vec4 operator-(const Vec4& b) const;
-		inline Vec4 operator-(void) const;
+		inline constexpr Vec4(const std::string& str);
+
 		template<typename U>
-		inline Vec4 operator*(const Vec4<U>& b) const;
+		inline constexpr Vec4 operator=(const Vec3<U>& b);
+
+		inline constexpr Vec4 operator+(const Vec4& b) const;
+		inline constexpr Vec4 operator-(const Vec4& b) const;
+		inline constexpr Vec4 operator-(void) const;
 		template<typename U>
-		inline Vec4 operator*(const U& b) const;
+		inline constexpr Vec4 operator*(const Vec4<U>& b) const;
 		template<typename U>
-		inline Vec4 operator/(const U& b) const;
+		inline constexpr Vec4 operator*(const U& b) const;
+		template<typename U>
+		inline constexpr Vec4 operator/(const U& b) const;
 
 		inline void operator+=(const Vec4& b);
 		inline void operator-=(const Vec4& b);
@@ -262,7 +262,7 @@ namespace GALAXY::Math
 		template<typename U>
 		inline bool operator!=(const Vec4<U>& b) const;
 
-		inline T& operator[](const size_t a);
+		inline constexpr T& operator[](const size_t a);
 		inline const T& operator[](const size_t a) const;
 
 		friend inline std::ostream& operator<<(std::ostream& os, const Vec4<T>& vec)
@@ -271,17 +271,17 @@ namespace GALAXY::Math
 			return os;
 		}
 
-		static inline Vec4 Right() { return { 1, 0, 0, 0 }; }
-		static inline Vec4 Up() { return { 0, 1, 0, 0 }; }
-		static inline Vec4 Forward() { return { 0, 0, 1, 0 }; }
-		static inline Vec4 Homogeneous() { return { 0, 0, 0, 1 }; }
+		static inline constexpr Vec4 Right() { return { 1, 0, 0, 0 }; }
+		static inline constexpr Vec4 Up() { return { 0, 1, 0, 0 }; }
+		static inline constexpr Vec4 Forward() { return { 0, 0, 1, 0 }; }
+		static inline constexpr Vec4 Homogeneous() { return { 0, 0, 0, 1 }; }
 
-		static inline Vec4 Left() { return { -1, 0, 0, 0 }; }
-		static inline Vec4 Down() { return { 0, -1, 0, 0 }; }
-		static inline Vec4 Back() { return { 0, 0, -1, 0 }; }
+		static inline constexpr Vec4 Left() { return { -1, 0, 0, 0 }; }
+		static inline constexpr Vec4 Down() { return { 0, -1, 0, 0 }; }
+		static inline constexpr Vec4 Back() { return { 0, 0, -1, 0 }; }
 
-		static inline Vec4 Zero() { return { 0, 0, 0, 0 }; }
-		static inline Vec4 One() { return { 1, 1, 1, 1 }; }
+		static inline constexpr Vec4 Zero() { return { 0, 0, 0, 0 }; }
+		static inline constexpr Vec4 One() { return { 1, 1, 1, 1 }; }
 
 		inline T LengthSquared() const;
 
@@ -335,28 +335,28 @@ namespace GALAXY::Math
 
 		Vec4f content[4];
 
-		Mat4() {}
+		inline constexpr Mat4() {}
 
-		inline Mat4(float diagonal);
+		inline constexpr Mat4(float diagonal);
 
-		inline Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3);
+		inline constexpr Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3);
 
-		inline Mat4(const float* data);
+		inline constexpr Mat4(const float* data);
 
-		inline Mat4(const double* data);
+		inline constexpr Mat4(const double* data);
 
-		inline Mat4 operator*(const Mat4& a) const;
+		inline constexpr Mat4 operator*(const Mat4& a) const;
 
 		template<typename U>
-		inline Vec4<U> operator*(const Vec4<U>& a) const;
+		inline constexpr Vec4<U> operator*(const Vec4<U>& a) const;
 
-		inline Mat4 operator+(const Mat4& a) const;
+		inline constexpr Mat4 operator+(const Mat4& a) const;
 
-		inline Vec4f& operator[](size_t i);
+		inline constexpr Vec4f& operator[](size_t i);
 
-		inline bool operator==(const Mat4& b) const;
+		inline constexpr bool operator==(const Mat4& b) const;
 
-		static Mat4 Identity() { return { 1.f }; }
+		static constexpr Mat4 Identity() { return { 1.f }; }
 
 		static inline Mat4 CreateProjectionMatrix(float _fov, float _aspect, float _near, float _far);
 		
@@ -428,30 +428,30 @@ namespace GALAXY::Math
 		float z;
 		float w;
 
-		Quat() : x(0), y(0), z(0), w(1) {}
+		inline constexpr Quat() : x(0), y(0), z(0), w(1) {}
 
-		Quat(float a) : x(a), y(a), z(a), w(a) {}
+		inline constexpr Quat(float a) : x(a), y(a), z(a), w(a) {}
 
-		Quat(float a, float b, float c, float d = 1) : x(a), y(b), z(c), w(d) {}
+		inline constexpr Quat(float a, float b, float c, float d = 1) : x(a), y(b), z(c), w(d) {}
 
-		Quat(const std::string& str);
-
-		template<typename U>
-		Quat(const Vec3<U>& a) : x(a.x), y(a.y), z(a.z), w(1.f) {}
+		inline Quat(const std::string& str);
 
 		template<typename U>
-		Quat(const Vec4<U>& a) : x(a.x), y(a.y), z(a.z), w(a.w) {}
-
-		inline Quat operator+(const Quat& a) const;
-
-		inline Quat operator-(const Quat& a) const;
-
-		inline Quat operator*(const Quat& a) const;
-
-		inline Quat operator*(float a) const;
+		inline constexpr Quat(const Vec3<U>& a) : x(a.x), y(a.y), z(a.z), w(1.f) {}
 
 		template<typename U>
-		inline Vec3<U> operator*(const Vec3<U>& a) const;
+		inline constexpr Quat(const Vec4<U>& a) : x(a.x), y(a.y), z(a.z), w(a.w) {}
+
+		inline constexpr Quat operator+(const Quat& a) const;
+
+		inline constexpr Quat operator-(const Quat& a) const;
+
+		inline constexpr Quat operator*(const Quat& a) const;
+
+		inline constexpr Quat operator*(float a) const;
+
+		template<typename U>
+		inline constexpr Vec3<U> operator*(const Vec3<U>& a) const;
 
 		inline void operator*=(const Quat& a);
 
@@ -462,13 +462,13 @@ namespace GALAXY::Math
 
 		inline float& operator[](const size_t index);
 
-		static inline Quat Identity() { return Quat(0, 0, 0, 1); }
+		static inline constexpr Quat Identity() { return Quat(0, 0, 0, 1); }
 
 		template<typename U>
-		static inline Quat AngleAxis(float angle, Vec3<U> axis);
+		static inline constexpr Quat AngleAxis(float angle, Vec3<U> axis);
 
 		template<typename U>
-		static inline Quat FromEuler(const Vec3<U>& euler);
+		static inline constexpr Quat FromEuler(const Vec3<U>& euler);
 
 		template<typename U>
 		static inline Quat LookRotation(Vec3<U> forward, Vec3<U> up);
