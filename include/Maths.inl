@@ -834,6 +834,19 @@ namespace GALAXY::Math {
 		return projectionMatrix;
 	}
 
+	inline Mat4 Mat4::CreateOrthographicMatrix(float _left, float _right, float _bottom, float _top, float _near,float _far)
+	{
+		Mat4 orthographicMatrix = Mat4();
+		orthographicMatrix[0][0] = 2.0f / (_right - _left);
+		orthographicMatrix[1][1] = 2.0f / (_top - _bottom);
+		orthographicMatrix[2][2] = -2.0f / (_far - _near);
+		orthographicMatrix[3][0] = -(_right + _left) / (_right - _left);
+		orthographicMatrix[3][1] = -(_top + _bottom) / (_top - _bottom);
+		orthographicMatrix[3][2] = -(_far + _near) / (_far - _near);
+		orthographicMatrix[3][3] = 1.0f;
+		return orthographicMatrix;
+	}
+
 	inline Mat4 Mat4::CreateViewMatrix(const Vec3f position, const Quat& rotation)
 	{
 		Mat4 out = Mat4::CreateTransformMatrix(position, rotation, Vec3f(1, 1, -1));

@@ -359,6 +359,8 @@ namespace GALAXY::Math
 		static constexpr Mat4 Identity() { return { 1.f }; }
 
 		static inline Mat4 CreateProjectionMatrix(float _fov, float _aspect, float _near, float _far);
+
+		static inline Mat4 CreateOrthographicMatrix(float _left, float _right, float _bottom, float _top, float _near, float _far);
 		
 		static inline Mat4 CreateViewMatrix(const Vec3f position, const Quat& rotation);
 

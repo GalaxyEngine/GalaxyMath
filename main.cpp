@@ -473,7 +473,10 @@ VTEST(MATH_TEST)
 			auto viewMatrix = Mat4::CreateViewMatrix(translation, euler.ToQuaternion());
 			glm::vec3 forward = euler.ToQuaternion().ToGlm() * Vec3f(0, 0, 1).ToGlm();
 			auto glmViewMatrix = glm::lookAt(translation.ToGlm(), translation.ToGlm() + forward, glm::vec3(0, 1, 0));
-			
+
+			auto glmOrtho = glm::ortho(-10.f, 10.f, -10.f, 10.f, 0.01f, 1000.f);
+			auto ortho = Mat4::CreateOrthographicMatrix(-10.f, 10.f, -10.f, 10.f, 0.01f, 1000.f);
+			REQUIRE(glmOrtho == ortho);
 			//Mat4(glmViewMatrix).Print();
 			//viewMatrix.Print();
 			
