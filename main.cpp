@@ -36,6 +36,7 @@ VTEST(MATH_TEST)
 			REQUIRE(Vec2i(2, 2) * 4 == Vec2d(8));
 			REQUIRE(Vec2i(2, 2) * Vec2f(1, 2) == Vec2d(2, 4));
 			REQUIRE(Vec2i(2.5, 3) / 3 == Vec2d(0, 1));
+			REQUIRE(Vec2f(2.5, 3) * 3.1415 == 3.1415 * Vec2f(2.5, 3));
 		}
 		TEST(Assignement Operators)
 		{
@@ -108,6 +109,7 @@ VTEST(MATH_TEST)
 			REQUIRE(Vec3i(2, 2, 2) * 4 == Vec3d(8));
 			REQUIRE(Vec3i(2, 2, 2) * Vec3f(1, 2, 5) == Vec3d(2, 4, 10));
 			REQUIRE(Vec3i(2.5, 3, 9.0) / 3 == Vec3d(0, 1, 3));
+			REQUIRE(Vec3f(2.5, 3, 9.0) * 3.1415 == 3.1415 * Vec3f(2.5, 3, 9.0));
 		}
 		TEST(Assignement Operators)
 		{
@@ -195,6 +197,7 @@ VTEST(MATH_TEST)
 			REQUIRE(Vec4i(2, 2, 2, 2) * 4 == Vec4d(8));
 			REQUIRE(Vec4i(2, 2, 2, 2) * Vec4f(1, 2, 5, 3) == Vec4d(2, 4, 10, 6));
 			REQUIRE(Vec4i(2.5, 3, 9.0, 6.6) / 3 == Vec4d(0, 1, 3, 2));
+			REQUIRE(Vec4f(2.5, 3, 9.0, 11.2) * 3.1415 == 3.1415 * Vec4f(2.5, 3, 9.0, 11.2));
 		}
 		TEST(Assignement Operators)
 		{
@@ -316,6 +319,14 @@ VTEST(MATH_TEST)
 			glm::quat glmEulerQuat = glm::quat(DegToRad * euler.ToGlm());
 			REQUIRE(eulerQuat == glmEulerQuat);
 
+			Mat4 rot4 = eulerQuat.ToRotationMatrix4();
+			Mat3 rot3 = eulerQuat.ToRotationMatrix3();
+
+			glm::mat4 glmRot4 = glm::mat4_cast(glmEulerQuat);
+			glm::mat3 glmRot3 = glm::mat3_cast(glmEulerQuat);
+			REQUIRE(rot4 == glmRot4);
+			REQUIRE(rot3 == glmRot3);
+
 			Vec3f forward(0, 0, 1);
 			Vec3f up(0, 1, 0);
 			REQUIRE(Quat::LookRotation(forward, up) == Quat::Identity());
@@ -381,6 +392,8 @@ VTEST(MATH_TEST)
 
 			Vec4f vec4Value = Vec4f(5, 6, 3.2f, 14.f);
 			REQUIRE(matrix * vec4Value == matrix.ToGlm() * vec4Value.ToGlm());
+			vec4Value.w = 0;
+			REQUIRE(Vec3f(matrix * vec4Value) == matrix * Vec3f(vec4Value));
 
 			REQUIRE(matrix + matrix2 == matrix.ToGlm() + matrix2.ToGlm());
 		}
@@ -471,8 +484,10 @@ VTEST(MATH_TEST)
 			REQUIRE(projectionMatrix == glmProjectMatrix);
 
 			auto viewMatrix = Mat4::CreateViewMatrix(translation, euler.ToQuaternion());
-			glm::vec3 forward = euler.ToQuaternion().ToGlm() * Vec3f(0, 0, 1).ToGlm();
-			auto glmViewMatrix = glm::lookAt(translation.ToGlm(), translation.ToGlm() + forward, glm::vec3(0, 1, 0));
+			glm::mat4 glmViewMatrix = glm::translate(glm::mat4(1), translation.ToGlm()) *
+				glm::mat4_cast(euler.ToQuaternion().ToGlm()) *
+				glm::scale(Vec3f(1, 1, -1).ToGlm());
+			glmViewMatrix = glm::inverse(glmViewMatrix);
 
 			auto glmOrtho = glm::ortho(-10.f, 10.f, -10.f, 10.f, 0.01f, 1000.f);
 			auto ortho = Mat4::CreateOrthographicMatrix(-10.f, 10.f, -10.f, 10.f, 0.01f, 1000.f);
@@ -480,7 +495,6 @@ VTEST(MATH_TEST)
 			//Mat4(glmViewMatrix).Print();
 			//viewMatrix.Print();
 			
-			//TODO : FIX THIS
 			REQUIRE(viewMatrix == glmViewMatrix);
 
 			// Create Inverse matrix
@@ -508,6 +522,133 @@ VTEST(MATH_TEST)
 			REQUIRE(matrix2[3] == Vec4f(9.4f, 4.7f, 1.8f, 6.2f));
 		}
 	}
+#pragma endregion
+
+#pragma region Matrix 3 Tests
+	NAMESPACE(Matrix_3)
+	{
+		float values[9] = { 10.35f, 147.3f, 10.35f,
+							5.6f,	69.69f,	3.25f,
+							10.5f,	7.8f,	71,};
+		Mat3 matrix = Mat3(values);
+
+		Mat3 matrix2 = Mat3(Vec3f(5.8f, 3.4f, 9.1f),
+			Vec3f(6.3f, 8.9f, 4.5f),
+			Vec3f(9.4f, 4.7f, 1.8f));
+
+		TEST(Constructors)
+		{
+			REQUIRE(Mat3(1) == Mat3::Identity());
+			REQUIRE(Mat3::Identity() == glm::mat3(1));
+
+			Mat4 tmp = matrix;
+			Mat3 tmp2 = tmp;
+			REQUIRE(matrix == tmp2);
+		}
+		TEST(Comparison Operators)
+		{
+
+			auto glmMatrix = glm::mat3(
+				values[0], values[1], values[2],
+				values[3], values[4], values[5],
+				values[6], values[7], values[8]);
+
+			REQUIRE(matrix != matrix2);
+			REQUIRE(matrix == Mat3(values));
+			REQUIRE(matrix.ToGlm() == glmMatrix);
+			REQUIRE(matrix == matrix.ToGlm());
+		}
+		TEST(Arithmetic Operators)
+		{
+			Mat3 multiply = matrix * matrix2;
+			glm::mat3 glmMultiply = matrix.ToGlm() * matrix2.ToGlm();
+			REQUIRE(multiply == glmMultiply);
+
+			Vec3f vec3Value = Vec3f(5, 6, 14.f);
+			REQUIRE(matrix * vec3Value == matrix.ToGlm() * vec3Value.ToGlm());
+
+			REQUIRE(matrix + matrix2 == matrix.ToGlm() + matrix2.ToGlm());
+		}
+		TEST(Methods)
+		{
+			// Rotation
+			Vec3f euler(32.5f, -63.21f, 17.93f);
+			Mat3 rotationMatrix = Mat3::CreateRotationMatrix(euler);
+			glm::mat3 glmRotationMatrix = glm::eulerAngleXYZ(DegToRad * euler.x, DegToRad * euler.y, DegToRad * euler.z);
+			REQUIRE(rotationMatrix == glmRotationMatrix);
+
+			// Quaternion
+			Quat eulerQuat = euler.ToQuaternion();
+			Mat3 quatRotationMatrix = Mat3::CreateRotationMatrix(eulerQuat);
+			glm::mat3 glmQuatRotationMatrix = glm::mat3(eulerQuat.ToGlm());
+			REQUIRE(quatRotationMatrix == glmQuatRotationMatrix);
+
+			// Scale
+			Vec3f scale = Vec3f(1, 2, 3);
+			Mat3 scaleMatrix = Mat3::CreateScaleMatrix(scale);
+			glm::mat3 glmIdentity = glm::mat3(1);
+			glm::mat3 glmScaleMatrix;
+			glmScaleMatrix[0] = glmIdentity[0] * scale[0];
+			glmScaleMatrix[1] = glmIdentity[1] * scale[1];
+			glmScaleMatrix[2] = glmIdentity[2] * scale[2];
+			REQUIRE(scaleMatrix == glmScaleMatrix);
+
+			// Transform with euler
+			Mat3 transformMatrix = Mat3::CreateTransformMatrix(euler, scale);
+			glm::mat3 glmTransformMatrix = glmRotationMatrix * glmScaleMatrix;
+			REQUIRE(transformMatrix == glmTransformMatrix);
+
+			// Transform with quaternion
+			Mat3 transformQuatMatrix = Mat3::CreateTransformMatrix(eulerQuat, scale);
+			glm::mat3 glmTransformQuatMatrix = glmQuatRotationMatrix * glmScaleMatrix;
+			REQUIRE(transformQuatMatrix == glmTransformQuatMatrix);
+
+			// Get Individuals components
+			// Get Rotation
+			
+			glm::quat glmGetRotation = glm::quat(glm::transpose(glmRotationMatrix));
+
+			Quat getRotation = transformMatrix.ToRotationMatrix().GetRotation();
+			REQUIRE(AlmostEqual(getRotation.x, glmGetRotation.x) &&
+				AlmostEqual(getRotation.y, glmGetRotation.y) &&
+				AlmostEqual(getRotation.z, glmGetRotation.z) &&
+				AlmostEqual(getRotation.w, glmGetRotation.w));
+
+			// Get Scale
+			Vec3f getScale = transformMatrix.GetScale();
+			glm::vec3 glmGetScale = glm::vec3(
+				glm::length(glmTransformMatrix[0]),
+				glm::length(glmTransformMatrix[1]),
+				glm::length(glmTransformMatrix[2]));
+			REQUIRE(AlmostEqual(getScale.x, glmGetScale.x) &&
+				AlmostEqual(getScale.y, glmGetScale.y) &&
+				AlmostEqual(getScale.z, glmGetScale.z));
+
+			// Create Inverse matrix
+			Mat3 inverse = transformMatrix.CreateInverseMatrix();
+			glm::mat3 glmInverse = glm::inverse(glmTransformMatrix);
+			REQUIRE(inverse == glmInverse);
+
+			// Create Transpose matrix
+			Mat3 transpose = transformMatrix.GetTranspose();
+			glm::mat3 glmTranspose = glm::transpose(glmTransformMatrix);
+			REQUIRE(transpose == glmTranspose);
+
+			// Get Determinant
+			float determinant = transformMatrix.GetDeterminant(3);
+			float glmDeterminant = glm::determinant(glmTransformMatrix);
+			REQUIRE(AlmostEqual(determinant, glmDeterminant));
+		}
+		TEST(Subscript Operators)
+		{
+			COMPARE(matrix2[0][1], 3.4f);
+			COMPARE(matrix2[1][0], 6.3f);
+			REQUIRE(matrix2[0] == Vec3f(5.8f, 3.4f, 9.1f));
+			REQUIRE(matrix2[1] == Vec3f(6.3f, 8.9f, 4.5f));
+			REQUIRE(matrix2[2] == Vec3f(9.4f, 4.7f, 1.8f));
+		}
+	}
+#pragma endregion
 }
 
 int main() {

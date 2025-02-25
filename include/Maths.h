@@ -22,6 +22,7 @@ namespace GALAXY::Math
 	class Vec3;
 	template<typename T>
 	class Vec4;
+	class Mat4;
 	class Quat;
 
 	template<typename T>
@@ -55,11 +56,11 @@ namespace GALAXY::Math
 		inline constexpr Vec2 operator-(const Vec2<U>& a) const;
 		inline constexpr Vec2 operator-(void) const;
 		template<typename U>
-		inline constexpr Vec2 operator*(const U& a) const;
+		inline constexpr Vec2 operator*(U a) const;
 		template<typename U>
 		inline constexpr Vec2 operator*(const Vec2<U>& a) const;
 		template<typename U>
-		inline constexpr Vec2 operator/(const U& a) const;
+		inline constexpr Vec2 operator/(U a) const;
 
 		template<typename U>
 		inline void operator+=(const Vec2<U>& a);
@@ -67,10 +68,14 @@ namespace GALAXY::Math
 		inline void operator-=(const Vec2<U>& a);
 		template<typename U>
 		inline void operator*=(const Vec2<U>& a);
+		static inline constexpr friend Vec2 operator*(T a, const Vec2<T>& b)
+		{
+			return { static_cast<T>(a * b.x), static_cast<T>(a * b.y) };
+		}
 		template<typename U>
-		inline void operator*=(const U& a);
+		inline void operator*=(U a);
 		template<typename U>
-		inline void operator/=(const U& a);
+		inline void operator/=(U a);
 
 		template<typename U>
 		inline constexpr bool operator==(const Vec2<U>& b) const;
@@ -82,6 +87,15 @@ namespace GALAXY::Math
 		inline constexpr bool operator!=(const Vec3<U>& b) const;
 
 		inline T& operator[](const size_t a);
+
+		static inline constexpr Vec2 Right() { return { 1, 0 }; }
+		static inline constexpr Vec2 Up() { return { 0, 1 }; }
+
+		static inline constexpr Vec2 Left() { return { -1, 0 }; }
+		static inline constexpr Vec2 Down() { return { 0, -1 }; }
+
+		static inline constexpr Vec2 Zero() { return { 0, 0 }; }
+		static inline constexpr Vec2 One() { return { 1, 1 }; }
 
 		inline T LengthSquared() const;
 
@@ -146,26 +160,30 @@ namespace GALAXY::Math
 		inline constexpr Vec3 operator-(void) const;
 		template<typename U>
 		inline constexpr Vec3 operator*(const Vec3<U>& b) const;
+		static inline constexpr friend Vec3 operator*(T a, const Vec3<T>& b)
+		{
+			return { static_cast<T>(a * b.x), static_cast<T>(a * b.y), static_cast<T>(a * b.z) };
+		}
 		template<typename U>
-		inline constexpr Vec3 operator*(const U& b) const;
+		inline constexpr Vec3 operator*(U b) const;
 		template<typename U>
-		inline constexpr Vec3 operator/(const U& b) const;
+		inline constexpr Vec3 operator/(U b) const;
 
 		inline void operator+=(const Vec3& b);
 		inline void operator-=(const Vec3& b);
 		inline void operator*=(const Vec3& b);
 		template<typename U>
-		inline void operator*=(const U& b);
+		inline void operator*=(U b);
 		template<typename U>
-		inline void operator/=(const U& b);
+		inline void operator/=(U b);
 
 		template<typename U>
 		inline constexpr bool operator==(const Vec3<U>& b) const;
 		template<typename U>
 		inline constexpr bool operator!=(const Vec3<U>& b) const;
 
-		inline T& operator[](const size_t a);
-		inline const T& operator[](const size_t a) const;
+		inline constexpr T& operator[](size_t a);
+		inline const T& operator[](size_t a) const;
 
 		static inline constexpr Vec3 Right() { return { 1, 0, 0 }; }
 		static inline constexpr Vec3 Up() { return { 0, 1, 0 }; }
@@ -244,26 +262,30 @@ namespace GALAXY::Math
 		inline constexpr Vec4 operator-(void) const;
 		template<typename U>
 		inline constexpr Vec4 operator*(const Vec4<U>& b) const;
+		static inline constexpr friend Vec4 operator*(T a, const Vec4<T>& b)
+		{
+			return { static_cast<T>(a * b.x), static_cast<T>(a * b.y), static_cast<T>(a * b.z), static_cast<T>(a * b.w) };
+		}
 		template<typename U>
-		inline constexpr Vec4 operator*(const U& b) const;
+		inline constexpr Vec4 operator*(U b) const;
 		template<typename U>
-		inline constexpr Vec4 operator/(const U& b) const;
+		inline constexpr Vec4 operator/(U b) const;
 
 		inline void operator+=(const Vec4& b);
 		inline void operator-=(const Vec4& b);
 		inline void operator*=(const Vec4& b);
 		template<typename U>
-		inline void operator*=(const U& b);
+		inline void operator*=(U b);
 		template<typename U>
-		inline void operator/=(const U& b);
+		inline void operator/=(U b);
 
 		template<typename U>
 		inline bool operator==(const Vec4<U>& b) const;
 		template<typename U>
 		inline bool operator!=(const Vec4<U>& b) const;
 
-		inline constexpr T& operator[](const size_t a);
-		inline const T& operator[](const size_t a) const;
+		inline constexpr T& operator[](size_t a);
+		inline const T& operator[](size_t a) const;
 
 		friend inline std::ostream& operator<<(std::ostream& os, const Vec4<T>& vec)
 		{
@@ -320,6 +342,90 @@ namespace GALAXY::Math
 	typedef Vec4<double> Vec4d;
 #pragma endregion
 
+	class Mat3
+	{
+	public:
+		/* data of the matrix : content[y][x]
+		 * Matrix is indexed with:
+		 *
+		 * Vec3 = 00 | 01 | 02
+		 * Vec3 = 10 | 11 | 12
+		 * Vec3 = 20 | 21 | 22
+		 *
+		*/
+
+		Vec3f content[3];
+
+		inline constexpr Mat3() {}
+
+		inline constexpr Mat3(float diagonal);
+
+		inline constexpr Mat3(const Vec3f& m0, const Vec3f& m1, const Vec3f& m2);
+
+		inline constexpr Mat3(const Mat4& m);
+
+		inline constexpr Mat3(const float* data);
+
+		inline constexpr Mat3(const double* data);
+
+		inline constexpr Mat3 operator*(const Mat3& a) const;
+
+		template<typename U>
+		inline constexpr Vec3<U> operator*(const Vec3<U>& a) const;
+
+		inline constexpr Mat3 operator+(const Mat3& a) const;
+
+		inline constexpr Vec3f& operator[](size_t i);
+
+		inline constexpr bool operator==(const Mat3& b) const;
+
+		static constexpr Mat3 Identity() { return { 1.f }; }
+
+		template<typename U>
+		static inline Mat3 CreateRotationMatrix(const Vec3<U>& rotation);
+		static inline Mat3 CreateRotationMatrix(const Quat& rotation);
+
+		template<typename U>
+		static inline Mat3 CreateScaleMatrix(const Vec3<U>& scale);
+
+		template<typename U>
+		static inline Mat3 CreateTransformMatrix(const Vec3<U>& rotation, const Vec3<U>& scale);
+		template<typename U>
+		static inline Mat3 CreateTransformMatrix(const Quat& rotation, const Vec3<U>& scale);
+
+		inline Quat GetRotation() const;
+
+		inline Vec3f GetScale() const;
+
+		inline Mat3 CreateInverseMatrix() const;
+
+		inline Mat3 CreateAdjMatrix() const;
+
+		inline Mat3 GetCofactor(int p, int q, int n) const;
+
+		inline float GetDeterminant(float n) const;
+
+		inline Mat3 GetTranspose() const;
+
+		inline void Print() const;
+
+		inline std::string ToString() const;
+
+		inline Mat3 ToRotationMatrix() const;
+
+		inline const float* Data() const;
+
+		inline float* Data();
+
+#ifdef MATH_GLM_EXTENSION
+		inline Mat3(const glm::mat3& mat);
+
+		inline glm::mat3 ToGlm() const;
+
+		inline bool operator==(const glm::mat3& b) const;
+#endif
+	};
+
 	class Mat4
 	{
 	public:
@@ -339,7 +445,9 @@ namespace GALAXY::Math
 
 		inline constexpr Mat4(float diagonal);
 
-		inline constexpr Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3);
+		inline constexpr Mat4(const Vec4f& m0, const Vec4f& m1, const Vec4f& m2, const Vec4f& m3);
+
+		inline constexpr Mat4(const Mat3& m);
 
 		inline constexpr Mat4(const float* data);
 
@@ -349,6 +457,9 @@ namespace GALAXY::Math
 
 		template<typename U>
 		inline constexpr Vec4<U> operator*(const Vec4<U>& a) const;
+
+		template<typename U>
+		inline constexpr Vec3<U> operator*(const Vec3<U>& a) const;
 
 		inline constexpr Mat4 operator+(const Mat4& a) const;
 
@@ -401,17 +512,15 @@ namespace GALAXY::Math
 
 		inline std::string ToString() const;
 
-		inline Mat4 ToRotationMatrix() const;
+		inline Mat3 ToRotationMatrix() const;
 
 		// Transforms a position by this matrix, without a perspective divide. (fast)
 		template<typename U>
-		inline Vec3<U> MultiplyPoint3x4(Vec3<U> point);
+		inline Vec3<U> MultiplyPoint3x4(Vec3<U> point) const;	
 
-		// Transforms a direction by this matrix.
-		template<typename U>
-		inline Vec3<U> MultiplyVector(Vec3<U> vector);		
+		inline const float* Data() const;
 
-		inline float* Data() const;
+		inline float* Data();
 
 #ifdef MATH_GLM_EXTENSION
 		inline Mat4(const glm::mat4& mat);
@@ -496,7 +605,9 @@ namespace GALAXY::Math
 
 		inline Vec3f ToEuler() const;
 
-		inline Mat4 ToRotationMatrix() const;
+		inline Mat3 ToRotationMatrix3() const;
+
+		inline Mat4 ToRotationMatrix4() const;
 
 		inline void Print() const;
 

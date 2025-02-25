@@ -98,7 +98,7 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline constexpr Vec2<T> Vec2<T>::operator*(const U& a) const
+	inline constexpr Vec2<T> Vec2<T>::operator*(U a) const
 	{
 		return { static_cast<T>(x * a), static_cast<T>(y * a) };
 	}
@@ -119,21 +119,21 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline void Vec2<T>::operator*=(const U& a)
+	inline void Vec2<T>::operator*=(U a)
 	{
 		*this = operator*(a);
 	}
 
 	template<typename T>
 	template<typename U>
-	inline constexpr Vec2<T> Vec2<T>::operator/(const U& a) const
+	inline constexpr Vec2<T> Vec2<T>::operator/(U a) const
 	{
 		return { x / a, y / a };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline void Vec2<T>::operator/=(const U& a)
+	inline void Vec2<T>::operator/=(U a)
 	{
 		*this = operator/(a);
 	}
@@ -301,28 +301,28 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline constexpr Vec3<T> Vec3<T>::operator*(const U& b) const
+	inline constexpr Vec3<T> Vec3<T>::operator*(U b) const
 	{
 		return { static_cast<T>(x * b), static_cast<T>(y * b), static_cast<T>(z * b) };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline constexpr Vec3<T> Vec3<T>::operator/(const U& b) const
+	inline constexpr Vec3<T> Vec3<T>::operator/(U b) const
 	{
 		return { x / b, y / b, z / b };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline void Vec3<T>::operator*=(const U& b)
+	inline void Vec3<T>::operator*=(U b)
 	{
 		*this = operator*(b);
 	}
 
 	template<typename T>
 	template<typename U>
-	inline void Vec3<T>::operator/=(const U& b)
+	inline void Vec3<T>::operator/=(U b)
 	{
 		*this = operator/(b);
 	}
@@ -385,7 +385,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline T& Vec3<T>::operator[](const size_t a)
+	inline constexpr T& Vec3<T>::operator[](size_t a)
 	{
 		if (a >= 3)
 			return x;
@@ -393,7 +393,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline const T& Vec3<T>::operator[](const size_t a) const
+	inline const T& Vec3<T>::operator[](size_t a) const
 	{
 		return *((&x) + a);
 	}
@@ -577,13 +577,16 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline constexpr Vec4<T> Vec4<T>::operator*(const U& b) const {
-		return { x * b, y * b, z * b, w * b };
+	inline constexpr Vec4<T> Vec4<T>::operator*(U b) const {
+		return { static_cast<T>(x * b),
+			static_cast<T>(y * b), 
+			static_cast<T>(z * b), 
+			static_cast<T>(w * b) };
 	}
 
 	template<typename T>
 	template<typename U>
-	inline constexpr Vec4<T> Vec4<T>::operator/(const U& b) const {
+	inline constexpr Vec4<T> Vec4<T>::operator/(U b) const {
 		return { x / b, y / b, z / b, w / b };
 	}
 
@@ -604,13 +607,13 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline void Vec4<T>::operator*=(const U& b) {
+	inline void Vec4<T>::operator*=(U b) {
 		*this = operator*(b);
 	}
 
 	template<typename T>
 	template<typename U>
-	inline void Vec4<T>::operator/=(const U& b) {
+	inline void Vec4<T>::operator/=(U b) {
 		*this = operator/(b);
 	}
 
@@ -629,14 +632,16 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline constexpr T& Vec4<T>::operator[](const size_t a) {
+	inline constexpr T& Vec4<T>::operator[](size_t a)
+	{
 		if (a >= 4)
 			return x;
 		return *((&x) + a);
 	}
 
 	template<typename T>
-	inline const T& Vec4<T>::operator[](const size_t a) const {
+	inline const T& Vec4<T>::operator[](size_t a) const
+	{
 		if (a >= 4)
 			return x;
 		return *((&x) + a);
@@ -718,6 +723,412 @@ namespace GALAXY::Math {
 
 #pragma endregion
 
+#pragma  region Mat3
+	inline constexpr Mat3::Mat3(float diagonal)
+	{
+		content[0][0] = 1;
+		content[1][1] = 1;
+		content[2][2] = 1;
+	}
+
+	inline constexpr Mat3::Mat3(const Vec3f& m0, const Vec3f& m1, const Vec3f& m2)
+	{
+		content[0] = m0;
+		content[1] = m1;
+		content[2] = m2;
+	}
+
+	inline constexpr Mat3::Mat3(const Mat4& m)
+	{
+		content[0] = m.content[0];
+		content[1] = m.content[1];
+		content[2] = m.content[2];
+	}
+
+	inline constexpr Mat3::Mat3(const float* data)
+	{
+		for (size_t i = 0; i < 3; ++i) {
+			for (size_t j = 0; j < 3; ++j) {
+				content[i][j] = data[i * 3 + j];
+			}
+		}
+	}
+
+	inline constexpr Mat3::Mat3(const double* data)
+	{
+		for (size_t i = 0; i < 3; ++i) {
+			for (size_t j = 0; j < 3; ++j) {
+				content[i][j] = static_cast<float>(data[i * 3 + j]);
+			}
+		}
+	}
+
+	inline constexpr Mat3 Mat3::operator*(const Mat3& a) const
+	{
+		Vec3f SrcA0 = this->content[0];
+		Vec3f SrcA1 = this->content[1];
+		Vec3f SrcA2 = this->content[2];
+
+		Vec3f SrcB0 = a.content[0];
+		Vec3f SrcB1 = a.content[1];
+		Vec3f SrcB2 = a.content[2];
+
+		Mat3 Result;
+		Result[0] = SrcA0 * SrcB0[0] + SrcA1 * SrcB0[1] + SrcA2 * SrcB0[2];
+		Result[1] = SrcA0 * SrcB1[0] + SrcA1 * SrcB1[1] + SrcA2 * SrcB1[2];
+		Result[2] = SrcA0 * SrcB2[0] + SrcA1 * SrcB2[1] + SrcA2 * SrcB2[2];
+		return Result;
+	}
+
+	template<typename U>
+	inline constexpr Vec3<U> Mat3::operator*(const Vec3<U>& a) const
+	{
+		Vec3<U> res;
+		res.x = content[0][0] * a.x + content[1][0] * a.y + content[2][0] * a.z;
+		res.y = content[0][1] * a.x + content[1][1] * a.y + content[2][1] * a.z;
+		res.z = content[0][2] * a.x + content[1][2] * a.y + content[2][2] * a.z;
+		return res;
+	}
+
+	inline constexpr Mat3 Mat3::operator+(const Mat3& a) const
+	{
+		Mat3 tmp;
+		for (size_t j = 0; j < 3; j++)
+		{
+			tmp.content[j] = content[j] + a.content[j];
+		}
+		return tmp;
+	}
+
+	inline constexpr Vec3f& Mat3::operator[](const size_t i)
+	{
+		return content[i];
+	}
+
+	inline constexpr bool Mat3::operator==(const Mat3& b) const
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				if (!AlmostEqual(b.content[i][j], content[i][j]))
+					return false;
+			}
+		}
+		return true;
+	}
+
+	inline Mat3 Mat3::CreateRotationMatrix(const Quat& rotation)
+	{
+		return rotation.ToRotationMatrix3();
+	}
+
+	template<typename U>
+	inline Mat3 Mat3::CreateRotationMatrix(const Vec3<U>& rotation)
+	{
+		float t1 = rotation.x * DegToRad;
+		float t2 = rotation.y * DegToRad;
+		float t3 = rotation.z * DegToRad;
+		float c1 = std::cos(-t1);
+		float c2 = std::cos(-t2);
+		float c3 = std::cos(-t3);
+		float s1 = std::sin(-t1);
+		float s2 = std::sin(-t2);
+		float s3 = std::sin(-t3);
+
+		Mat3 Result;
+		Result[0][0] = c2 * c3;
+		Result[0][1] = -c1 * s3 + s1 * s2 * c3;
+		Result[0][2] = s1 * s3 + c1 * s2 * c3;
+		Result[1][0] = c2 * s3;
+		Result[1][1] = c1 * c3 + s1 * s2 * s3;
+		Result[1][2] = -s1 * c3 + c1 * s2 * s3;
+		Result[2][0] = -s2;
+		Result[2][1] = s1 * c2;
+		Result[2][2] = c1 * c2;
+
+		return Result;
+	}
+
+	template<typename U>
+	inline Mat3 Mat3::CreateScaleMatrix(const Vec3<U>& scale)
+	{
+		Mat3 result;
+		result.content[0].x = scale.x;
+		result.content[1].y = scale.y;
+		result.content[2].z = scale.z;
+		return result;
+	}
+
+	template<typename U>
+	inline Mat3 Mat3::CreateTransformMatrix(const Vec3<U>& rotation, const Vec3<U>& scale)
+	{
+		return CreateRotationMatrix(rotation) * CreateScaleMatrix(scale);
+	}
+
+	template<typename U>
+	inline Mat3 Mat3::CreateTransformMatrix(const Quat& rotation, const Vec3<U>& scale)
+	{
+		return rotation.ToRotationMatrix3() * CreateScaleMatrix(scale);
+	}
+
+	inline Vec3f Mat3::GetScale() const
+	{
+		// World Scale equal length of columns of the model matrix.
+		float x = Vec3f(content[0][0], content[0][1], content[0][2]).Length();
+		float y = Vec3f(content[1][0], content[1][1], content[1][2]).Length();
+		float z = Vec3f(content[2][0], content[2][1], content[2][2]).Length();
+		return { x, y, z };
+	}
+
+	inline Quat Mat3::GetRotation() const
+	{
+		// !! Work only with rotation matrix
+		Mat3 temp = ToRotationMatrix();
+
+		// Extracting the rotation from the matrix
+		float trace = temp.content[0][0] + temp.content[1][1] + temp.content[2][2];
+
+		if (trace > 0)
+		{
+			float s = 0.5f / std::sqrt(trace + 1.0f);
+			float w = 0.25f / s;
+			float x = (temp.content[1][2] - temp.content[2][1]) * s;
+			float y = (temp.content[2][0] - temp.content[0][2]) * s;
+			float z = (temp.content[0][1] - temp.content[1][0]) * s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+		else if (temp.content[0][0] > temp.content[1][1] && temp.content[0][0] > temp.content[2][2])
+		{
+			float s = 2.0f * std::sqrt(1.0f + temp.content[0][0] - temp.content[1][1] - temp.content[2][2]);
+			float x = 0.25f * s;
+			float w = (temp.content[1][2] - temp.content[2][1]) / s;
+			float y = (temp.content[1][0] + temp.content[0][1]) / s;
+			float z = (temp.content[2][0] + temp.content[0][2]) / s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+		else if (temp.content[1][1] > temp.content[2][2])
+		{
+			float s = 2.0f * std::sqrt(1.0f + temp.content[1][1] - temp.content[0][0] - temp.content[2][2]);
+			float y = 0.25f * s;
+			float w = (temp.content[2][0] - temp.content[0][2]) / s;
+			float x = (temp.content[1][0] + temp.content[0][1]) / s;
+			float z = (temp.content[2][1] + temp.content[1][2]) / s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+		else
+		{
+			float s = 2.0f * std::sqrt(1.0f + temp.content[2][2] - temp.content[0][0] - temp.content[1][1]);
+			float w = (temp.content[0][1] - temp.content[1][0]) / s;
+			float x = (temp.content[2][0] + temp.content[0][2]) / s;
+			float y = (temp.content[2][1] + temp.content[1][2]) / s;
+			float z = 0.25f * s;
+			return Quat(x, y, z, w).GetInverse();
+		}
+	}
+
+	inline Mat3 Mat3::CreateInverseMatrix() const
+	{
+		// Find determinant of matrix
+		Mat3 inverse;
+		float det = GetDeterminant(3);
+		if (det == 0)
+		{
+			std::cout << "ERROR with Inverse Matrix" << std::endl;
+			return Mat3::Identity();
+		}
+
+		// Find adjoint
+		Mat3 adj = CreateAdjMatrix();
+
+		// Find Inverse using formula "inverse(A) = adj(A)/det(A)"
+		for (int i = 0; i < 3; i++)
+			for (int j = 0; j < 3; j++)
+				inverse.content[i][j] = adj.content[i][j] / float(det);
+
+		return inverse;
+	}
+
+	inline Mat3 Mat3::CreateAdjMatrix() const
+	{
+		// temp is used to store cofactors of matrix
+		Mat3 temp;
+		Mat3 adj;
+		int sign = 1;
+
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				// Get cofactor of matrix[i][j]
+				temp = GetCofactor(i, j, 3);
+
+				// sign of adj positive if sum of row
+				// and column indexes is even.
+				sign = ((i + j) % 2 == 0) ? 1 : -1;
+
+				// Interchanging rows and columns to get the
+				// transpose of the cofactor matrix
+				adj.content[j][i] = (float)((sign) * (temp.GetDeterminant(2)));
+			}
+		}
+		return adj;
+	}
+
+	inline Mat3 Mat3::GetCofactor(int p, int q, int n) const
+	{
+		Mat3 mat;
+		int i = 0, j = 0;
+		// Looping for each element of the matrix
+		for (int row = 0; row < n; row++)
+		{
+			for (int col = 0; col < n; col++)
+			{
+				//  Copying into temporary matrix only those element
+				//  which are not in given row and column
+				if (row != p && col != q)
+				{
+					mat.content[i][j++] = content[row][col];
+
+					// Row is filled, so increase row index and
+					// reset col index
+					if (j == n - 1)
+					{
+						j = 0;
+						i++;
+					}
+				}
+			}
+		}
+		return mat;
+	}
+
+	inline float Mat3::GetDeterminant(float n) const
+	{
+		if (n == 2)
+		{
+			float result = content[0][0] * content[1][1] - content[1][0] * content[0][1];
+			return result;
+		}
+		else if (n == 3)
+		{
+			float result = content[0][0] * content[1][1] * content[2][2]
+				- content[0][0] * content[2][1] * content[1][2]
+				+ content[1][0] * content[2][1] * content[0][2]
+				- content[1][0] * content[0][1] * content[2][2]
+				+ content[2][0] * content[0][1] * content[1][2]
+				- content[2][0] * content[1][1] * content[0][2];
+			return result;
+		}
+		else return 0.0f;
+	}
+
+	inline Mat3 Mat3::GetTranspose() const
+	{
+		Mat3 transpose = *this;
+		float temp;
+
+		for (int i = 0; i < 3; i++) {
+			for (int j = i + 1; j < 3; j++) {
+				temp = transpose[i][j];
+				transpose[i][j] = transpose[j][i];
+				transpose[j][i] = temp;
+			}
+		}
+		return transpose;
+	}
+
+	inline const float* Mat3::Data() const
+	{
+		return &content->x;
+	}
+
+	inline float* Mat3::Data()
+	{
+		return &content->x;
+	}
+
+	inline void Mat3::Print() const
+	{
+		for (int j = 0; j < 3; j++)
+		{
+			for (int i = 0; i < 3; i++)
+			{
+				if (content[j][i] >= 0.0f) printf(" ");
+				printf("%.6f", content[j][i]);
+			}
+			printf("\n");
+		}
+		printf("\n");
+	}
+
+	inline std::string Math::Mat3::ToString() const
+	{
+		std::string print;
+		for (int j = 0; j < 3; j++)
+		{
+			print += "{";
+			for (int i = 0; i < 3; i++)
+			{
+				print += " ";
+				print += std::to_string(content[j][i]);
+			}
+			print += "}";
+		}
+		return print;
+	}
+
+	inline Mat3 Mat3::ToRotationMatrix() const
+	{
+		// Convert to rotation Matrix
+		Vec3f scale = GetScale();
+		return Mat3(
+			Vec3f(content[0]) / scale[0],
+			Vec3f(content[1]) / scale[1],
+			Vec3f(content[2]) / scale[2]);
+	}
+
+#ifdef MATH_GLM_EXTENSION
+
+	Mat3::Mat3(const glm::mat3& mat)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				content[i][j] = mat[i][j];
+			}
+		}
+	}
+
+	glm::mat3 Mat3::ToGlm() const
+	{
+		auto mat = glm::mat3();
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				mat[i][j] = content[i][j];
+			}
+		}
+		return mat;
+	}
+
+	inline bool Mat3::operator==(const glm::mat3& b) const
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				if (!AlmostEqual(b[i][j], content[i][j]))
+					return false;
+			}
+		}
+		return true;
+	}
+#endif
+#pragma  endregion
+
 #pragma  region Mat4
 	inline constexpr Mat4::Mat4(float diagonal)
 	{
@@ -727,7 +1138,7 @@ namespace GALAXY::Math {
 		content[3][3] = 1;
 	}
 
-	inline constexpr Mat4::Mat4(Vec4f m0, Vec4f m1, Vec4f m2, Vec4f m3)
+	inline constexpr Mat4::Mat4(const Vec4f& m0, const Vec4f& m1, const Vec4f& m2, const Vec4f& m3)
 	{
 		content[0] = m0;
 		content[1] = m1;
@@ -735,6 +1146,13 @@ namespace GALAXY::Math {
 		content[3] = m3;
 	}
 
+	inline constexpr Mat4::Mat4(const Mat3& m)
+	{
+		content[0] = m.content[0];
+		content[1] = m.content[1];
+		content[2] = m.content[2];
+		content[3] = Vec4f::Zero();
+	}
 
 	inline constexpr Mat4::Mat4(const float* data)
 	{
@@ -789,6 +1207,16 @@ namespace GALAXY::Math {
 		Vec4f Add1 = Mul2 + Mul3;
 		Vec4f Add2 = Add0 + Add1;
 		return Add2;
+	}
+
+	template<typename U>
+	inline constexpr Vec3<U> Mat4::operator*(const Vec3<U>& a) const
+	{
+		Vec3<U> res;
+		res.x = content[0][0] * a.x + content[1][0] * a.y + content[2][0] * a.z;
+		res.y = content[0][1] * a.x + content[1][1] * a.y + content[2][1] * a.z;
+		res.z = content[0][2] * a.x + content[1][2] * a.y + content[2][2] * a.z;
+		return res;
 	}
 
 	inline constexpr Mat4 Mat4::operator+(const Mat4& a) const
@@ -864,7 +1292,7 @@ namespace GALAXY::Math {
 
 	inline Mat4 Mat4::CreateRotationMatrix(const Quat& rotation)
 	{
-		return rotation.ToRotationMatrix();
+		return rotation.ToRotationMatrix4();
 	}
 
 	template<typename U>
@@ -918,7 +1346,7 @@ namespace GALAXY::Math {
 	template<typename U>
 	inline Mat4 Mat4::CreateTransformMatrix(const Vec3<U>& position, const Quat& rotation, const Vec3<U>& scale)
 	{
-		return CreateTranslationMatrix(position) * rotation.ToRotationMatrix() * CreateScaleMatrix(scale);
+		return CreateTranslationMatrix(position) * rotation.ToRotationMatrix4() * CreateScaleMatrix(scale);
 	}
 	/*
 
@@ -1117,47 +1545,9 @@ namespace GALAXY::Math {
 	inline Quat Mat4::GetRotation() const
 	{
 		// !! Work only with rotation matrix
-		Mat4 temp = ToRotationMatrix();
+		Mat3 temp = ToRotationMatrix();
 
-		// Extracting the rotation from the matrix
-		float trace = temp.content[0][0] + temp.content[1][1] + temp.content[2][2];
-
-		if (trace > 0)
-		{
-			float s = 0.5f / std::sqrt(trace + 1.0f);
-			float w = 0.25f / s;
-			float x = (temp.content[1][2] - temp.content[2][1]) * s;
-			float y = (temp.content[2][0] - temp.content[0][2]) * s;
-			float z = (temp.content[0][1] - temp.content[1][0]) * s;
-			return Quat(x, y, z, w).GetInverse();
-		}
-		else if (temp.content[0][0] > temp.content[1][1] && temp.content[0][0] > temp.content[2][2])
-		{
-			float s = 2.0f * std::sqrt(1.0f + temp.content[0][0] - temp.content[1][1] - temp.content[2][2]);
-			float x = 0.25f * s;
-			float w = (temp.content[1][2] - temp.content[2][1]) / s;
-			float y = (temp.content[1][0] + temp.content[0][1]) / s;
-			float z = (temp.content[2][0] + temp.content[0][2]) / s;
-			return Quat(x, y, z, w).GetInverse();
-		}
-		else if (temp.content[1][1] > temp.content[2][2])
-		{
-			float s = 2.0f * std::sqrt(1.0f + temp.content[1][1] - temp.content[0][0] - temp.content[2][2]);
-			float y = 0.25f * s;
-			float w = (temp.content[2][0] - temp.content[0][2]) / s;
-			float x = (temp.content[1][0] + temp.content[0][1]) / s;
-			float z = (temp.content[2][1] + temp.content[1][2]) / s;
-			return Quat(x, y, z, w).GetInverse();
-		}
-		else
-		{
-			float s = 2.0f * std::sqrt(1.0f + temp.content[2][2] - temp.content[0][0] - temp.content[1][1]);
-			float w = (temp.content[0][1] - temp.content[1][0]) / s;
-			float x = (temp.content[2][0] + temp.content[0][2]) / s;
-			float y = (temp.content[2][1] + temp.content[1][2]) / s;
-			float z = 0.25f * s;
-			return Quat(x, y, z, w).GetInverse();
-		}
+		return temp.GetRotation();
 	}
 
 	inline Mat4 Mat4::CreateInverseMatrix() const
@@ -1303,7 +1693,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename U>
-	inline Vec3<U> Mat4::MultiplyPoint3x4(Vec3<U> point)
+	inline Vec3<U> Mat4::MultiplyPoint3x4(Vec3<U> point) const
 	{
 		Vec3<U> res;
 		res.x = content[0][0] * point.x + content[0][1] * point.y + content[0][2] * point.z + content[0][3];
@@ -1312,19 +1702,14 @@ namespace GALAXY::Math {
 		return res;
 	}
 
-	template<typename U>
-	inline Vec3<U> Mat4::MultiplyVector(Vec3<U> vector)
+	inline const float* Mat4::Data() const
 	{
-		Vec3<U> res;
-		res.x = content[0][0] * vector.x + content[0][1] * vector.y + content[0][2] * vector.z;
-		res.y = content[1][0] * vector.x + content[1][1] * vector.y + content[1][2] * vector.z;
-		res.z = content[2][0] * vector.x + content[2][1] * vector.y + content[2][2] * vector.z;
-		return res;
+		return &content->x;
 	}
 
-	inline float* Mat4::Data() const
+	inline float* Mat4::Data()
 	{
-		return const_cast<float*>(reinterpret_cast<const float*>(this));
+		return &content->x;
 	}
 
 	inline void Mat4::Print() const
@@ -1357,15 +1742,14 @@ namespace GALAXY::Math {
 		return print;
 	}
 
-	inline Mat4 Mat4::ToRotationMatrix() const
+	inline Mat3 Mat4::ToRotationMatrix() const
 	{		
 		// Convert to rotation Matrix
 		Vec3f scale = GetScale();
-		return Mat4(
-			Vec4f(Vec3f(content[0]) / scale[0], 0),
-			Vec4f(Vec3f(content[1]) / scale[1], 0),
-			Vec4f(Vec3f(content[2]) / scale[2], 0),
-			Vec4f(0));
+		return Mat3(
+			Vec3f(content[0]) / scale[0],
+			Vec3f(content[1]) / scale[1],
+			Vec3f(content[2]) / scale[2]);
 	}
 
 #ifdef MATH_GLM_EXTENSION
@@ -1679,7 +2063,40 @@ namespace GALAXY::Math {
 		return Vec3<U>(pitch, yaw, roll) * RadToDeg;
 	}
 
-	inline Mat4 Quat::ToRotationMatrix() const
+	inline Mat3 Quat::ToRotationMatrix3() const
+	{
+		// Precalculate coordinate products
+		float _x = x * 2.0F;
+		float _y = y * 2.0F;
+		float _z = z * 2.0F;
+		float xx = x * _x;
+		float yy = y * _y;
+		float zz = z * _z;
+		float xy = x * _y;
+		float xz = x * _z;
+		float yz = y * _z;
+		float wx = w * _x;
+		float wy = w * _y;
+		float wz = w * _z;
+
+		// Calculate 3x3 matrix from orthonormal basis
+		Mat3 m;
+		m[0][0] = 1.0f - (yy + zz);
+		m[0][1] = xy + wz;
+		m[0][2] = xz - wy;
+
+		m[1][0] = xy - wz;
+		m[1][1] = 1.0f - (xx + zz);
+		m[1][2] = yz + wx;
+
+		m[2][0] = xz + wy;
+		m[2][1] = yz - wx;
+		m[2][2] = 1.0f - (xx + yy);
+
+		return m;
+	}
+
+	inline Mat4 Quat::ToRotationMatrix4() const
 	{
 		// Precalculate coordinate products
 		float _x = x * 2.0F;
