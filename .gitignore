@@ -13,3 +13,4 @@ CMakeLists.txt
 *.pdb
 *.lib
 *.a
+*.*~

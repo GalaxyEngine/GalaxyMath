@@ -178,10 +178,25 @@ namespace GALAXY::Math {
 		return *((&x) + a);
 	}
 
+	template <typename T>
+	const T& Vec2<T>::operator[](const size_t a) const
+	{
+		if (a >= 2)
+			// Return first value of the vector if not valid index
+			return this->x;
+		return *((&x) + a);
+	}
+
 	template<typename T>
 	inline T Vec2<T>::LengthSquared() const
 	{
 		return x * x + y * y;
+	}
+
+	template <typename T>
+	T Vec2<T>::LengthSquared(const Vec2& a)
+	{
+		return a.LengthSquared();
 	}
 
 	template<typename T>
@@ -196,10 +211,22 @@ namespace GALAXY::Math {
 		return a.x * x + a.y * y;
 	}
 
+	template <typename T>
+	T Vec2<T>::Dot(const Vec2& a, const Vec2& b)
+	{
+		return a.Dot(b);
+	}
+
 	template<typename T>
 	inline Vec2<T> Vec2<T>::Cross(const Vec2& a) const
 	{
 		return { x * a.y, y * a.x };
+	}
+
+	template <typename T>
+	Vec2<T> Vec2<T>::Cross(const Vec2& a, const Vec2& b)
+	{
+		return a.Cross(b);
 	}
 
 	template<typename T>
@@ -208,10 +235,22 @@ namespace GALAXY::Math {
 		return { -y, x };
 	}
 
+	template <typename T>
+	Vec2<T> Vec2<T>::Ortho(const Vec2& a)
+	{
+		return a.Ortho();
+	}
+
 	template<typename T>
 	void Math::Vec2<T>::Normalize()
 	{
 		*this = GetNormalize();
+	}
+
+	template <typename T>
+	Vec2<T> Vec2<T>::Normalize(const Vec2& a)
+	{
+		return a.GetNormalize();
 	}
 
 	template<typename T>
@@ -230,6 +269,12 @@ namespace GALAXY::Math {
 		std::cout << x << ", " << y << std::endl;
 	}
 
+	template <typename T>
+	void Vec2<T>::Print(const Vec2& a, int precision)
+	{
+		a.Print(precision);
+	}
+
 	template<typename T>
 	inline std::string Vec2<T>::ToString(int precision /*= 6*/) const
 	{
@@ -239,6 +284,12 @@ namespace GALAXY::Math {
 		oss << x << ", " << y;
 
 		return oss.str();
+	}
+
+	template <typename T>
+	std::string Vec2<T>::ToString(const Vec2& a, int precision)
+	{
+		return a.ToString(precision);
 	}
 
 	template<typename T>
@@ -257,6 +308,12 @@ namespace GALAXY::Math {
 	inline T* Vec2<T>::Data() const
 	{
 		return const_cast<T*>(reinterpret_cast<const T*>(this));
+	}
+
+	template <typename T>
+	T* Vec2<T>::Data(const Vec2& a)
+	{
+		return a.Data();
 	}
 
 #pragma endregion
@@ -372,16 +429,16 @@ namespace GALAXY::Math {
 
 	template<typename T>
 	template<typename U>
-	inline constexpr bool Vec3<T>::operator==(const Vec3<U>& a) const
+	inline constexpr bool Vec3<T>::operator==(const Vec3<U>& b) const
 	{
-		return AlmostEqual(x, static_cast<T>(a.x)) && AlmostEqual(y, static_cast<T>(a.y)) && AlmostEqual(z, static_cast<T>(a.z));
+		return AlmostEqual(x, static_cast<T>(b.x)) && AlmostEqual(y, static_cast<T>(b.y)) && AlmostEqual(z, static_cast<T>(b.z));
 	}
 
 	template<typename T>
 	template<typename U>
-	inline constexpr bool Vec3<T>::operator!=(const Vec3<U>& a) const
+	inline constexpr bool Vec3<T>::operator!=(const Vec3<U>& b) const
 	{
-		return !AlmostEqual(x, static_cast<T>(a.x)) || !AlmostEqual(y, static_cast<T>(a.y)) || !AlmostEqual(z, static_cast<T>(a.z));
+		return !AlmostEqual(x, static_cast<T>(b.x)) || !AlmostEqual(y, static_cast<T>(b.y)) || !AlmostEqual(z, static_cast<T>(b.z));
 	}
 
 	template<typename T>
@@ -395,6 +452,8 @@ namespace GALAXY::Math {
 	template<typename T>
 	inline const T& Vec3<T>::operator[](size_t a) const
 	{
+		if (a >= 3)
+			return x;
 		return *((&x) + a);
 	}
 
@@ -404,10 +463,22 @@ namespace GALAXY::Math {
 		return x * x + y * y + z * z;
 	}
 
+	template <typename T>
+	T Vec3<T>::LengthSquared(const Vec3& a)
+	{
+		return a.LengthSquared();
+	}
+
 	template<typename T>
 	inline T Vec3<T>::Length() const
 	{
 		return std::sqrt(LengthSquared());
+	}
+
+	template <typename T>
+	T Vec3<T>::Length(const Vec3& a)
+	{
+		return a.Length();
 	}
 
 	template<typename T>
@@ -416,10 +487,22 @@ namespace GALAXY::Math {
 		return x * a.x + y * a.y + z * a.z;
 	}
 
+	template <typename T>
+	T Vec3<T>::Dot(const Vec3& a, const Vec3& b)
+	{
+		return a.Dot(b);
+	}
+
 	template<typename T>
 	inline Vec3<T> Vec3<T>::Cross(const Vec3& a) const
 	{
 		return { (y * a.z) - (z * a.y), (z * a.x) - (x * a.z), (x * a.y) - (y * a.x) };
+	}
+
+	template <typename T>
+	Vec3<T> Vec3<T>::Cross(const Vec3& a, const Vec3& b)
+	{
+		return a.Cross(b);
 	}
 
 	template<typename T>
@@ -437,6 +520,12 @@ namespace GALAXY::Math {
 		*this = GetNormalize();
 	}
 
+	template <typename T>
+	Vec3<T> Vec3<T>::Normalize(const Vec3& a)
+	{
+		return a.GetNormalize();
+	}
+
 	template<typename T>
 	inline T Vec3<T>::Distance(const Vec3& a) const
 	{
@@ -446,14 +535,20 @@ namespace GALAXY::Math {
 		return std::sqrt(i * i + j * j + h * h);
 	}
 
+	template <typename T>
+	T Vec3<T>::Distance(const Vec3& a, const Vec3& b)
+	{
+		return a.Distance(b);
+	}
+
 	template<typename T>
-	inline Vec3<T> Vec3<T>::Lerp(const Vec3& b, float t) const
+	inline Vec3<T> Vec3<T>::Lerp(const Vec3& a, float t) const
 	{
 		if (t < 0)
 			return *this;
 		else if (t >= 1)
-			return b;
-		return (*this) * (1 - t) + b * t;
+			return a;
+		return (*this) * (1 - t) + a * t;
 	}
 
 	template<typename T>
@@ -463,6 +558,12 @@ namespace GALAXY::Math {
 		std::cout << x << ", " << y << ", " << z << std::endl;
 	}
 
+	template <typename T>
+	void Vec3<T>::Print(const Vec3& a, int precision)
+	{
+		a.Print(precision);
+	}
+
 	template<typename T>
 	inline std::string Vec3<T>::ToString(int precision /*= 6*/) const
 	{
@@ -470,6 +571,12 @@ namespace GALAXY::Math {
 		oss << std::fixed << std::setprecision(precision);
 		oss << x << ", " << y << ", " << z;
 		return oss.str();
+	}
+
+	template <typename T>
+	std::string Vec3<T>::ToString(const Vec3& a, int precision)
+	{
+		return a.ToString(precision);
 	}
 
 	template<typename T>
@@ -495,11 +602,22 @@ namespace GALAXY::Math {
 		return result;
 	}
 
+	template <typename T>
+	Quat Vec3<T>::ToQuaternion(const Vec3& a)
+	{
+		return a.ToQuaternion();
+	}
 
 	template<typename T>
 	inline T* Vec3<T>::Data() const
 	{
 		return const_cast<T*>(reinterpret_cast<const T*>(this));
+	}
+
+	template <typename T>
+	T* Vec3<T>::Data(const Vec3& a)
+	{
+		return a.Data();
 	}
 
 #pragma endregion
@@ -652,9 +770,21 @@ namespace GALAXY::Math {
 		return (x * x + y * y + z * z + w * w);
 	}
 
+	template <typename T>
+	T Vec4<T>::LengthSquared(const Vec4& a)
+	{
+		return a.LengthSquared();
+	}
+
 	template<typename T>
 	inline T Vec4<T>::Length() const {
 		return std::sqrt(LengthSquared());
+	}
+
+	template <typename T>
+	T Vec4<T>::Length(const Vec4& a)
+	{
+		return a.Length();
 	}
 
 	template<typename T>
@@ -662,9 +792,21 @@ namespace GALAXY::Math {
 		return (x * a.x + y * a.y + z * a.z + w * a.w);
 	}
 
+	template <typename T>
+	T Vec4<T>::Dot(const Vec4& a, const Vec4& b)
+	{
+		return a.Dot(b);
+	}
+
 	template<typename T>
 	inline T Vec4<T>::Distance(const Vec4& a) const {
 		return (a - *this).Length();
+	}
+
+	template <typename T>
+	T Vec4<T>::Distance(const Vec4& a, const Vec4& b)
+	{
+		return b.Distance(a);
 	}
 
 	template<typename T>
@@ -679,10 +821,22 @@ namespace GALAXY::Math {
 		*this = GetHomogenize();
 	}
 
+	template <typename T>
+	Vec4<T> Vec4<T>::Homogenize(const Vec4& a)
+	{
+		return a.GetHomogenize();
+	}
+
 	template<typename T>
 	inline void Vec4<T>::Normalize()
 	{
 		*this = GetNormalize();
+	}
+
+	template <typename T>
+	Vec4<T> Vec4<T>::Normalize(const Vec4& a)
+	{
+		return a.GetNormalize();
 	}
 
 	template<typename T>
@@ -700,10 +854,22 @@ namespace GALAXY::Math {
 		std::cout << x << ", " << y << ", " << z << ", " << w << std::endl;
 	}
 
+	template <typename T>
+	void Vec4<T>::Print(const Vec4& a, int precision)
+	{
+		a.Print(precision);
+	}
+
 	template<typename T>
 	Vec3<T> Vec4<T>::ToVector3() const
 	{
 		return { x, y, z };
+	}
+
+	template <typename T>
+	Vec3<T> Vec4<T>::ToVector3(const Vec4& a)
+	{
+		return a.ToVector3();
 	}
 
 	template<typename T>
@@ -715,10 +881,22 @@ namespace GALAXY::Math {
 		return oss.str();
 	}
 
+	template <typename T>
+	std::string Vec4<T>::ToString(const Vec4& a, int precision)
+	{
+		return a.ToString(precision);
+	}
+
 	template<typename T>
 	T* Vec4<T>::Data() const
 	{
 		return const_cast<T*>(reinterpret_cast<const T*>(this));
+	}
+
+	template <typename T>
+	T* Vec4<T>::Data(const Vec4& a)
+	{
+		return a.Data();
 	}
 
 #pragma endregion
@@ -805,6 +983,11 @@ namespace GALAXY::Math {
 		return content[i];
 	}
 
+	constexpr const Vec3f& Mat3::operator[](size_t i) const
+	{
+		return content[i];
+	}
+
 	inline constexpr bool Mat3::operator==(const Mat3& b) const
 	{
 		for (int i = 0; i < 3; i++)
@@ -881,6 +1064,11 @@ namespace GALAXY::Math {
 		return { x, y, z };
 	}
 
+	inline Vec3f Mat3::GetScale(const Mat3& a)
+	{
+		return a.GetScale();
+	}
+
 	inline Quat Mat3::GetRotation() const
 	{
 		// !! Work only with rotation matrix
@@ -927,6 +1115,11 @@ namespace GALAXY::Math {
 		}
 	}
 
+	inline Quat Mat3::GetRotation(const Mat3& a)
+	{
+		return a.GetRotation();
+	}
+
 	inline Mat3 Mat3::CreateInverseMatrix() const
 	{
 		// Find determinant of matrix
@@ -947,6 +1140,26 @@ namespace GALAXY::Math {
 				inverse.content[i][j] = adj.content[i][j] / float(det);
 
 		return inverse;
+	}
+
+	inline Mat3 Mat3::CreateInverseMatrix(const Mat3& a)
+	{
+		return a.CreateInverseMatrix();
+	}
+
+	inline Mat3 Mat3::GetInverseMatrix() const
+	{
+		return CreateInverseMatrix();
+	}
+
+	inline Mat3 Mat3::GetInverseMatrix(const Mat3& a)
+	{
+		return a.GetInverseMatrix();
+	}
+
+	inline void Mat3::Inverse()
+	{
+		*this = CreateInverseMatrix();
 	}
 
 	inline Mat3 Mat3::CreateAdjMatrix() const
@@ -973,6 +1186,11 @@ namespace GALAXY::Math {
 			}
 		}
 		return adj;
+	}
+
+	inline Mat3 Mat3::CreateAdjMatrix(const Mat3& a)
+	{
+		return a.CreateAdjMatrix();
 	}
 
 	inline Mat3 Mat3::GetCofactor(int p, int q, int n) const
@@ -1003,6 +1221,11 @@ namespace GALAXY::Math {
 		return mat;
 	}
 
+	inline Mat3 Mat3::GetCofactor(const Mat3& a, int p, int q, int n)
+	{
+		return a.GetCofactor(p, q, n);
+	}
+
 	inline float Mat3::GetDeterminant(float n) const
 	{
 		if (n == 2)
@@ -1023,6 +1246,16 @@ namespace GALAXY::Math {
 		else return 0.0f;
 	}
 
+	float Mat3::GetDeterminant(const Mat3& a, float n)
+	{
+		return a.GetDeterminant(n);
+	}
+
+	inline void Mat3::Transpose()
+	{
+		*this = GetTranspose();
+	}
+
 	inline Mat3 Mat3::GetTranspose() const
 	{
 		Mat3 transpose = *this;
@@ -1038,14 +1271,9 @@ namespace GALAXY::Math {
 		return transpose;
 	}
 
-	inline const float* Mat3::Data() const
+	inline Mat3 Mat3::Transpose(const Mat3& a)
 	{
-		return &content->x;
-	}
-
-	inline float* Mat3::Data()
-	{
-		return &content->x;
+		return a.GetTranspose();
 	}
 
 	inline void Mat3::Print() const
@@ -1060,6 +1288,11 @@ namespace GALAXY::Math {
 			printf("\n");
 		}
 		printf("\n");
+	}
+
+	inline void Mat3::Print(const Mat3& a)
+	{
+		a.Print();
 	}
 
 	inline std::string Math::Mat3::ToString() const
@@ -1078,6 +1311,11 @@ namespace GALAXY::Math {
 		return print;
 	}
 
+	inline std::string Mat3::ToString(const Mat3& a)
+	{
+		return a.ToString();
+	}
+
 	inline Mat3 Mat3::ToRotationMatrix() const
 	{
 		// Convert to rotation Matrix
@@ -1086,6 +1324,26 @@ namespace GALAXY::Math {
 			Vec3f(content[0]) / scale[0],
 			Vec3f(content[1]) / scale[1],
 			Vec3f(content[2]) / scale[2]);
+	}
+
+	inline Mat3 Mat3::ToRotationMatrix(const Mat3& a)
+	{
+		return a.ToRotationMatrix();
+	}
+
+	inline const float* Mat3::Data() const
+	{
+		return &content->x;
+	}
+
+	inline float* Mat3::Data()
+	{
+		return &content->x;
+	}
+
+	inline const float* Mat3::Data(const Mat3& a)
+	{
+		return a.Data();
 	}
 
 #ifdef MATH_GLM_EXTENSION
@@ -1234,6 +1492,11 @@ namespace GALAXY::Math {
 		return content[i];
 	}
 
+	constexpr const Vec4f& Mat4::operator[](size_t i) const
+	{
+		return content[i];
+	}
+
 	inline constexpr bool Mat4::operator==(const Mat4& b) const
 	{
 		for (int i = 0; i < 4; i++)
@@ -1348,16 +1611,8 @@ namespace GALAXY::Math {
 	{
 		return CreateTranslationMatrix(position) * rotation.ToRotationMatrix4() * CreateScaleMatrix(scale);
 	}
-	/*
 
-	inline Quat Mat4::ToQuaternion()
-	{
-		float w = sqrtf(1 + at(0, 0) + at(1, 1) + at(2, 2)) / 2;
-		return Quat((at(2, 1) - at(1, 2)) / (4 * w), (at(0, 2) - at(2, 0)) / (4 * w), (at(1, 0) - at(0, 1)) / (4 * w), w);
-	}
-	*/
-
-	inline void Mat4::DecomposeTransformMatrix(Vec3f& translation, Quat& rotation, Vec3f& scale) const
+	inline void Mat4::DecomposeTransformMatrix(Vec3f& position, Quat& rotation, Vec3f& scale) const
 	{
 		Vec4f Perspective;
 		Mat4 LocalMatrix(*this);
@@ -1366,8 +1621,6 @@ namespace GALAXY::Math {
 			for (size_t j = 0; j < 4; ++j)
 				LocalMatrix[i][j] /= LocalMatrix[3][3];
 
-		// perspectiveMatrix is used to solve for perspective, but it also provides
-		// an easy way to test for singularity of the upper 3x3 component.
 		Mat4 PerspectiveMatrix(LocalMatrix);
 
 		for (size_t i = 0; i < 3; i++)
@@ -1379,30 +1632,23 @@ namespace GALAXY::Math {
 				return std::abs(a - b) >= std::numeric_limits<float>::epsilon();
 			};
 
-		// First, isolate perspective.  This is the messiest.
 		if (
 			epsilonNotEqual(LocalMatrix[0][3], 0.f) ||
 			epsilonNotEqual(LocalMatrix[1][3], 0.f) ||
 			epsilonNotEqual(LocalMatrix[2][3], 0.f)
 			)
 		{
-			// rightHandSide is the right hand side of the equation.
 			Vec4f RightHandSide;
 			RightHandSide[0] = LocalMatrix[0][3];
 			RightHandSide[1] = LocalMatrix[1][3];
 			RightHandSide[2] = LocalMatrix[2][3];
 			RightHandSide[3] = LocalMatrix[3][3];
 
-			// Solve the equation by inverting PerspectiveMatrix and multiplying
-			// rightHandSide by the inverse.  (This is the easiest way, not
-			// necessarily the best.)
 			Mat4 InversePerspectiveMatrix = PerspectiveMatrix.CreateInverseMatrix();//   inverse(PerspectiveMatrix, inversePerspectiveMatrix);
 			Mat4 TransposedInversePerspectiveMatrix = InversePerspectiveMatrix.GetTranspose();//   transposeMatrix4(inversePerspectiveMatrix, transposedInversePerspectiveMatrix);
 
 			Perspective = TransposedInversePerspectiveMatrix * RightHandSide;
-			//  v4MulPointByMatrix(rightHandSide, transposedInversePerspectiveMatrix, perspectivePoint);
-
-			// Clear the perspective partition
+			
 			LocalMatrix[0][3] = LocalMatrix[1][3] = LocalMatrix[2][3] = 0.f;
 			LocalMatrix[3][3] = 1.f;
 		}
@@ -1414,13 +1660,11 @@ namespace GALAXY::Math {
 
 		(void)(Perspective);
 
-		// Next take care of translation (easy).
-		translation = Vec3f(LocalMatrix[3]);
+		position = Vec3f(LocalMatrix[3]);
 		LocalMatrix[3] = Vec4f(0, 0, 0, LocalMatrix[3].w);
 
 		Vec3f Row[3], Pdum3, Skew;
 
-		// Now get scale and shear.
 		for (size_t i = 0; i < 3; ++i)
 			for (size_t j = 0; j < 3; ++j)
 				Row[i][j] = LocalMatrix[i][j];
@@ -1435,41 +1679,30 @@ namespace GALAXY::Math {
 				return a * ascl + b * bscl;
 			};
 
-		// Compute X scale factor and normalize first row.
-		scale.x = Row[0].Length();// v3Length(Row[0]);
+		scale.x = Row[0].Length();
 
-		// Scale vector
 		Row[0] = scaleVector(Row[0], 1.f);
 
-		// Compute XY shear factor and make 2nd row orthogonal to 1st.
 		Skew.z = Row[0].Dot(Row[1]);
 
-		/// Make a linear combination of two vectors and return the result.
 		Row[1] = combine(Row[1], Row[0], 1.f, -Skew.z);
 
-		// Now, compute Y scale and normalize 2nd row.
 		scale.y = Row[1].Length();
 
-		// Scale vector
 		Row[1] = scaleVector(Row[1], 1.f);
 		Skew.z /= scale.y;
 
-		// Compute XZ and YZ shears, orthogonalize 3rd row.
 		Skew.y = Row[0].Dot(Row[2]);
 		Row[2] = combine(Row[2], Row[0], 1.f, -Skew.y);
 		Skew.x = Row[1].Dot(Row[2]);
 		Row[2] = combine(Row[2], Row[1], 1.f, -Skew.x);
 
-		// Next, get Z scale and normalize 3rd row.
 		scale.z = Row[2].Length();
 		Row[2] = scaleVector(Row[2], 1.f);
 		Skew.y /= scale.z;
 		Skew.x /= scale.z;
-
-		// At this point, the matrix (in rows[]) is orthonormal.
-		// Check for a coordinate system flip.  If the determinant
-		// is -1, then negate the matrix and the scaling factors.
-		Pdum3 = Row[1].Cross(Row[2]); // v3Cross(row[1], row[2], Pdum3);
+		
+		Pdum3 = Row[1].Cross(Row[2]);
 		if (Row[0].Dot(Pdum3) < 0)
 		{
 			for (size_t i = 0; i < 3; i++)
@@ -1478,23 +1711,6 @@ namespace GALAXY::Math {
 				Row[i] *= -1.f;
 			}
 		}
-
-		// Now, get the rotations out, as described in the gem.
-
-		// FIXME - Add the ability to return either quaternions (which are
-		// easier to recompose with) or Euler angles (rx, ry, rz), which
-		// are easier for authors to deal with. The latter will only be useful
-		// when we fix https://bugs.webkit.org/show_bug.cgi?id=23799, so I
-		// will leave the Euler angle code here for now.
-
-		// ret.rotateY = asin(-Row[0][2]);
-		// if (cos(ret.rotateY) != 0) {
-		//     ret.rotateX = atan2(Row[1][2], Row[2][2]);
-		//     ret.rotateZ = atan2(Row[0][1], Row[0][0]);
-		// } else {
-		//     ret.rotateX = atan2(-Row[2][0], Row[1][1]);
-		//     ret.rotateZ = 0;
-		// }
 
 		int i, j, k = 0;
 		float root, trace = Row[0].x + Row[1].y + Row[2].z;
@@ -1506,7 +1722,7 @@ namespace GALAXY::Math {
 			rotation.x = root * (Row[1].z - Row[2].y);
 			rotation.y = root * (Row[2].x - Row[0].z);
 			rotation.z = root * (Row[0].y - Row[1].x);
-		} // End if > 0
+		}
 		else
 		{
 			static int Next[3] = { 1, 2, 0 };
@@ -1523,14 +1739,24 @@ namespace GALAXY::Math {
 			rotation[j] = root * (Row[i][j] + Row[j][i]);
 			rotation[k] = root * (Row[i][k] + Row[k][i]);
 			rotation.w = root * (Row[j][k] - Row[k][j]);
-		} // End if <= 0
+		}
 
 		rotation.Conjugate();
+	}
+
+	inline void Mat4::DecomposeTransformMatrix(const Mat4& a, Vec3f& position, Quat& rotation, Vec3f& scale)
+	{
+		a.DecomposeTransformMatrix(position, rotation, scale);
 	}
 
 	inline Vec3f Mat4::GetTranslation() const
 	{
 		return content[3];
+	}
+
+	inline Vec3f Mat4::GetTranslation(const Mat4& a)
+	{
+		return a.GetTranslation();
 	}
 
 	inline Vec3f Mat4::GetScale() const
@@ -1542,12 +1768,22 @@ namespace GALAXY::Math {
 		return { x, y, z };
 	}
 
+	inline Vec3f Mat4::GetScale(const Mat4& a)
+	{
+		return a.GetScale();
+	}
+
 	inline Quat Mat4::GetRotation() const
 	{
 		// !! Work only with rotation matrix
 		Mat3 temp = ToRotationMatrix();
 
 		return temp.GetRotation();
+	}
+
+	inline Quat Mat4::GetRotation(const Mat4& a)
+	{
+		return a.GetRotation();
 	}
 
 	inline Mat4 Mat4::CreateInverseMatrix() const
@@ -1570,6 +1806,26 @@ namespace GALAXY::Math {
 				inverse.content[i][j] = adj.content[i][j] / float(det);
 
 		return inverse;
+	}
+
+	inline Mat4 Mat4::CreateInverseMatrix(const Mat4& a)
+	{
+		return a.CreateInverseMatrix();
+	}
+
+	Mat4 Mat4::GetInverseMatrix() const
+	{
+		return CreateInverseMatrix();
+	}
+
+	inline Mat4 Mat4::GetInverseMatrix(const Mat4& a)
+	{
+		return a.GetInverseMatrix();
+	}
+
+	inline void Mat4::Inverse()
+	{
+		*this = CreateInverseMatrix();
 	}
 
 	inline Mat4 Mat4::CreateAdjMatrix() const
@@ -1598,6 +1854,11 @@ namespace GALAXY::Math {
 		return adj;
 	}
 
+	inline Mat4 Mat4::CreateAdjMatrix(const Mat4& a)
+	{
+		return a.CreateAdjMatrix();
+	}
+
 	inline Mat4 Mat4::GetCofactor(int p, int q, int n) const
 	{
 		Mat4 mat;
@@ -1624,6 +1885,11 @@ namespace GALAXY::Math {
 			}
 		}
 		return mat;
+	}
+
+	inline Mat4 Mat4::GetCofactor(const Mat4& a, int p, int q, int n)
+	{
+		return a.GetCofactor(p, q, n);
 	}
 
 	inline float Mat4::GetDeterminant(float n) const
@@ -1676,6 +1942,16 @@ namespace GALAXY::Math {
 		}
 		else return 0.0f;
 	}
+	
+	float Mat4::GetDeterminant(const Mat4& a, float n)
+	{
+		return a.GetDeterminant(n);
+	}
+
+	inline void Mat4::Transpose()
+	{
+		*this = GetTranspose();
+	}
 
 	inline Mat4 Mat4::GetTranspose() const
 	{
@@ -1692,19 +1968,35 @@ namespace GALAXY::Math {
 		return transpose;
 	}
 
+	inline Mat4 Mat4::Transpose(const Mat4& a)
+	{
+		return a.GetTranspose();
+	}
+
 	template<typename U>
 	inline Vec3<U> Mat4::MultiplyPoint3x4(Vec3<U> point) const
 	{
 		Vec3<U> res;
-		res.x = content[0][0] * point.x + content[0][1] * point.y + content[0][2] * point.z + content[0][3];
-		res.y = content[1][0] * point.x + content[1][1] * point.y + content[1][2] * point.z + content[1][3];
-		res.z = content[2][0] * point.x + content[2][1] * point.y + content[2][2] * point.z + content[2][3];
+		res.x = content[0][0] * point.x + content[1][0] * point.y + content[2][0] * point.z + content[3][0];
+		res.y = content[0][1] * point.x + content[1][1] * point.y + content[2][1] * point.z + content[3][1];
+		res.z = content[0][2] * point.x + content[1][2] * point.y + content[2][2] * point.z + content[3][2];
 		return res;
+	}
+
+	template <typename U>
+	Vec3<U> Mat4::MultiplyPoint3x4(const Mat4& a, Vec3<U> point)
+	{
+		return a.MultiplyPoint3x4(point);
 	}
 
 	inline const float* Mat4::Data() const
 	{
 		return &content->x;
+	}
+
+	inline const float* Mat4::Data(const Mat4& a)
+	{
+		return a.Data();	
 	}
 
 	inline float* Mat4::Data()
@@ -1726,6 +2018,11 @@ namespace GALAXY::Math {
 		printf("\n");
 	}
 
+	inline void Mat4::Print(const Mat4& a)
+	{
+		a.Print();
+	}
+
 	inline std::string Math::Mat4::ToString() const
 	{
 		std::string print;
@@ -1742,6 +2039,11 @@ namespace GALAXY::Math {
 		return print;
 	}
 
+	inline std::string Mat4::ToString(const Mat4& a)
+	{
+		return a.ToString();
+	}
+
 	inline Mat3 Mat4::ToRotationMatrix() const
 	{		
 		// Convert to rotation Matrix
@@ -1750,6 +2052,11 @@ namespace GALAXY::Math {
 			Vec3f(content[0]) / scale[0],
 			Vec3f(content[1]) / scale[1],
 			Vec3f(content[2]) / scale[2]);
+	}
+
+	inline Mat3 Mat4::ToRotationMatrix(const Mat4& a)
+	{
+		return a.ToRotationMatrix();
 	}
 
 #ifdef MATH_GLM_EXTENSION
@@ -1885,6 +2192,13 @@ namespace GALAXY::Math {
 			return x;
 		return *((&x) + index);
 	}
+	
+	inline const float& Quat::operator[](const size_t index) const
+	{
+		if (index >= 4)
+			return x;
+		return *((&x) + index);
+	}
 
 	template<typename U>
 	inline constexpr Quat Quat::AngleAxis(float angle, Vec3<U> axis)
@@ -1995,6 +2309,12 @@ namespace GALAXY::Math {
 	{
 		*this = GetInverse();
 	}
+
+	inline Quat Quat::Inverse(const Quat& a)
+	{
+		return a.GetInverse();
+	}
+
 	inline Quat Quat::GetInverse() const
 	{
 		float d = w * w + x * x + y * y + z * z;
@@ -2007,6 +2327,12 @@ namespace GALAXY::Math {
 	{
 		*this = GetNormalize();
 	}
+
+	inline Quat Quat::Normalize(const Quat& a)
+	{
+		return a.GetNormalize();
+	}
+
 	inline Quat Quat::GetNormalize() const
 	{
 		float mag = std::sqrt(Dot(*this));
@@ -2022,6 +2348,11 @@ namespace GALAXY::Math {
 		*this = GetConjugate();
 	}
 
+	inline Quat Quat::Conjugate(const Quat& a)
+	{
+		return a.GetConjugate();
+	}
+
 	inline Quat Quat::GetConjugate() const
 	{
 		return Quat(-x, -y, -z, w);
@@ -2030,6 +2361,16 @@ namespace GALAXY::Math {
 	inline float Quat::Dot(const Quat& a) const
 	{
 		return x * a.x + y * a.y + z * a.z + w * a.w;
+	}
+
+	float Quat::Dot(const Quat& a, const Quat& b)
+	{
+		return a.Dot(b);
+	}
+
+	inline Vec3f Quat::ToEuler(const Quat& a)
+	{
+		return a.ToEuler<float>();
 	}
 
 	inline Vec3f Quat::ToEuler() const
@@ -2063,6 +2404,12 @@ namespace GALAXY::Math {
 		return Vec3<U>(pitch, yaw, roll) * RadToDeg;
 	}
 
+	template <typename U>
+	Vec3<U> Quat::ToEuler(const Quat& a)
+	{
+		return a.ToEuler<U>();
+	}
+
 	inline Mat3 Quat::ToRotationMatrix3() const
 	{
 		// Precalculate coordinate products
@@ -2094,6 +2441,11 @@ namespace GALAXY::Math {
 		m[2][2] = 1.0f - (xx + yy);
 
 		return m;
+	}
+
+	inline Mat3 Quat::ToRotationMatrix3(const Quat& a)
+	{
+		return a.ToRotationMatrix3();
 	}
 
 	inline Mat4 Quat::ToRotationMatrix4() const
@@ -2137,16 +2489,32 @@ namespace GALAXY::Math {
 		return m;
 	}
 
+	inline Mat4 Quat::ToRotationMatrix4(const Quat& a)
+	{
+		return a.ToRotationMatrix4();
+	}
+
 	inline void Quat::Print() const
 	{
 		printf("Quaternion { %f, %f, %f, %f}\n", x, y, z, w);
 	}
+
+	inline void Quat::Print(const Quat& a)
+	{
+		a.Print();
+	}
+
 	inline std::string Quat::ToString(int precision) const
 	{
 		std::ostringstream oss;
 		oss << std::fixed << std::setprecision(precision);
 		oss << x << ", " << y << ", " << z << ", " << w;
 		return oss.str();
+	}
+
+	std::string Quat::ToString(const Quat& a, int precision)
+	{
+		return a.ToString(precision);
 	}
 #pragma endregion
 }
