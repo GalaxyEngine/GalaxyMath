@@ -68,7 +68,7 @@ namespace GALAXY::Math
 		inline void operator-=(const Vec2<U>& a);
 		template<typename U>
 		inline void operator*=(const Vec2<U>& a);
-		static inline constexpr friend Vec2 operator*(T a, const Vec2<T>& b)
+		constexpr friend Vec2 operator*(T a, const Vec2<T>& b)
 		{
 			return { static_cast<T>(a * b.x), static_cast<T>(a * b.y) };
 		}
@@ -169,7 +169,7 @@ namespace GALAXY::Math
 		inline constexpr Vec3 operator-(void) const;
 		template<typename U>
 		inline constexpr Vec3 operator*(const Vec3<U>& b) const;
-		static inline constexpr friend Vec3 operator*(T a, const Vec3<T>& b)
+		constexpr friend Vec3 operator*(T a, const Vec3<T>& b)
 		{
 			return { static_cast<T>(a * b.x), static_cast<T>(a * b.y), static_cast<T>(a * b.z) };
 		}
@@ -282,7 +282,7 @@ namespace GALAXY::Math
 		inline constexpr Vec4 operator-(void) const;
 		template<typename U>
 		inline constexpr Vec4 operator*(const Vec4<U>& b) const;
-		static inline constexpr friend Vec4 operator*(T a, const Vec4<T>& b)
+		constexpr friend Vec4 operator*(T a, const Vec4<T>& b)
 		{
 			return { static_cast<T>(a * b.x), static_cast<T>(a * b.y), static_cast<T>(a * b.z), static_cast<T>(a * b.w) };
 		}
