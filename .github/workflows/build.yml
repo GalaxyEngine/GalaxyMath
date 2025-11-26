@@ -67,7 +67,7 @@ jobs:
 
       # Setup compilation mode and install project dependencies
       - name: Configure xmake and install dependencies
-        run: xmake config --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --physics_api=custom,jolt --ccache=n --yes
+        run: xmake config --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --ccache=n --yes
 
       # Save dependencies
       - name: Save cached xmake dependencies
@@ -132,7 +132,7 @@ jobs:
           key: MSVC-${{ matrix.arch }}-${{ matrix.mode }}-${{ steps.dep_hash.outputs.hash }}-W${{ steps.cache_key.outputs.key }}
 
       - name: Configure xmake and install dependencies
-        run: xmake config -v --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --physics_api=custom,jolt --ccache=n --yes
+        run: xmake config -v --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --ccache=n --yes
 
       - name: Save cached xmake dependencies
         if: ${{ !steps.restore-depcache.outputs.cache-hit }}
@@ -198,7 +198,7 @@ jobs:
           key: MinGW-${{ matrix.arch }}-${{ matrix.mode }}-${{ steps.dep_hash.outputs.hash }}-W${{ steps.cache_key.outputs.key }}
 
       - name: Configure xmake and install dependencies
-        run: xmake config --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --physics_api=custom,jolt --ccache=n --yes
+        run: xmake config --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --ccache=n --yes
 
       - name: Save cached xmake dependencies
         if: ${{ !steps.restore-depcache.outputs.cache-hit }}
@@ -266,7 +266,7 @@ jobs:
 
       # Setup compilation mode and install project dependencies
       - name: Configure xmake and install dependencies
-        run: xmake config --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --physics_api=custom,jolt --ccache=n --yes
+        run: xmake config --arch=${{ matrix.arch }} --mode=${{ matrix.mode }} --ccache=n --yes
 
       # Save dependencies
       - name: Save cached xmake dependencies
