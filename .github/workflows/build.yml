@@ -80,6 +80,9 @@ jobs:
       # Build
       - name: Build
         run: xmake -v --yes
+        
+      - name: Test
+        run: xmake run
 
   # -----------------------------------------------------------------------------
   # Windows (MSVC) Build
@@ -143,6 +146,9 @@ jobs:
 
       - name: Build
         run: xmake -v --yes
+        
+      - name: Test
+        run: xmake run
 
   # -----------------------------------------------------------------------------
   # Windows (MinGW) Build
@@ -209,6 +215,9 @@ jobs:
 
       - name: Build
         run: xmake -v --yes
+        
+      - name: Test
+        run: xmake run
 
   # -----------------------------------------------------------------------------
   # MacOS Build
@@ -269,3 +278,6 @@ jobs:
 
       - name: Build
         run: xmake -v --yes
+        
+      - name: Test
+        run: xmake run

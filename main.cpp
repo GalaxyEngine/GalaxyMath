@@ -691,6 +691,5 @@ VTEST(MATH_TEST)
 int main() {
 	system("cls");   // used to clear and enable color on Windows
 	runTests();
-	system("pause"); // used to pause at the end on Windows;
-	return 0;
+	return failed != 0;
 }
