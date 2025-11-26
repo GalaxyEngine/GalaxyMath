@@ -331,9 +331,9 @@ VTEST(MATH_TEST)
 			REQUIRE(quat1.GetConjugate() == glm::conjugate(quat1.ToGlm()));
 			COMPARE(quat1.Dot(quat2), glm::dot(quat1.ToGlm(), quat2.ToGlm()));
 			// REQUIRE(eulerQuat.ToEuler() == glm::eulerAngles(glmEulerQuat) * RadToDeg);
-			PCOMPARE(eulerQuat.ToEuler().x, glm::eulerAngles(glmEulerQuat).x * RadToDeg, 1e-5f);
-			PCOMPARE(eulerQuat.ToEuler().y, glm::eulerAngles(glmEulerQuat).y * RadToDeg, 1e-5f);
-			PCOMPARE(eulerQuat.ToEuler().z, glm::eulerAngles(glmEulerQuat).z * RadToDeg, 1e-5f);
+			PCOMPARE(eulerQuat.ToEuler().x, glm::eulerAngles(glmEulerQuat).x * RadToDeg);
+			PCOMPARE(eulerQuat.ToEuler().y, glm::eulerAngles(glmEulerQuat).y * RadToDeg);
+			PCOMPARE(eulerQuat.ToEuler().z, glm::eulerAngles(glmEulerQuat).z * RadToDeg);
 			
 			REQUIRE(quat1.ToString() == std::string("1.000000, 2.000000, 3.000000, 4.000000"));
 		}
@@ -478,9 +478,9 @@ VTEST(MATH_TEST)
 			glm::vec3 eulerGetRotation2 = glm::eulerAngles(glmGetRotation2) * RadToDeg;
 			glm::vec3 eulerGetRotation = glm::eulerAngles(glmGetRotation) * RadToDeg;
 			// REQUIRE(eulerGetRotation == eulerGetRotation2);
-			PCOMPARE(eulerGetRotation.x, eulerGetRotation2.x, 1e-5f);
-			PCOMPARE(eulerGetRotation.y, eulerGetRotation2.y, 1e-5f);
-			PCOMPARE(eulerGetRotation.z, eulerGetRotation2.z, 1e-5f);
+			PCOMPARE(eulerGetRotation.x, eulerGetRotation2.x);
+			PCOMPARE(eulerGetRotation.y, eulerGetRotation2.y);
+			PCOMPARE(eulerGetRotation.z, eulerGetRotation2.z);
 
 			getRotation = transformMatrix.GetRotation();
 			REQUIRE(getRotation == glmGetRotation);
