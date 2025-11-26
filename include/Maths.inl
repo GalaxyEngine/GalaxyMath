@@ -38,7 +38,7 @@ namespace GALAXY::Math {
 	}
 
 	template<typename T>
-	inline constexpr Vec2<T>::Vec2(const std::string& str)
+	inline Vec2<T>::Vec2(const std::string& str)
 	{
 		std::istringstream ss(str);
 
@@ -321,7 +321,7 @@ namespace GALAXY::Math {
 #pragma region Vec3
 
 	template<typename T>
-	inline constexpr Vec3<T>::Vec3(const std::string& str)
+	inline Vec3<T>::Vec3(const std::string& str)
 	{
 		std::istringstream ss(str);
 
@@ -624,7 +624,7 @@ namespace GALAXY::Math {
 
 #pragma region Vec4
 	template<typename T>
-	inline constexpr Vec4<T>::Vec4(const std::string& str)
+	inline Vec4<T>::Vec4(const std::string& str)
 	{
 		std::istringstream ss(str);
 

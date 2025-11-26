@@ -218,7 +218,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [macos-13]
+        os: [macos-latest]
         arch: [x86_64]
         mode: [debug, release]
         kind: [binary]

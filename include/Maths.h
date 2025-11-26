@@ -44,7 +44,7 @@ namespace GALAXY::Math
 		template<typename U>
 		inline constexpr Vec2(const Vec2<U>& a);
 
-		inline constexpr Vec2(const std::string& str);
+		inline Vec2(const std::string& str);
 
 		template<typename U>
 		inline constexpr Vec2 operator=(const Vec2<U>& a);
@@ -154,7 +154,7 @@ namespace GALAXY::Math
 
 		explicit inline constexpr Vec3(T xyz) : x(xyz), y(xyz), z(xyz) {}
 
-		inline constexpr Vec3(const std::string& str);
+		inline Vec3(const std::string& str);
 
 		template<typename U>
 		inline constexpr Vec3(const Vec2<U>& xy, T _z = 0);
@@ -273,7 +273,7 @@ namespace GALAXY::Math
 		template<typename U>
 		inline constexpr Vec4(const Vec4<U>& a);
 
-		inline constexpr Vec4(const std::string& str);
+		inline Vec4(const std::string& str);
 
 		template<typename U>
 		inline constexpr Vec4 operator=(const Vec3<U>& b);
