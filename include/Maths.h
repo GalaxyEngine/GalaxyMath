@@ -5,6 +5,7 @@
 #define RadToDeg 180.f / PI
 
 #ifdef MATH_GLM_EXTENSION
+#define GLM_ENABLE_EXPERIMENTAL
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -523,6 +524,9 @@ namespace GALAXY::Math
 		static inline Mat4 CreateOrthographicMatrix(float _left, float _right, float _bottom, float _top, float _near, float _far);
 		
 		static inline Mat4 CreateViewMatrix(const Vec3f position, const Quat& rotation);
+		
+		static inline Mat4 LookAtRH(const Vec3f& position, const Vec3f& target, const Vec3f& up);
+		static inline Mat4 LookAtLH(const Vec3f& position, const Vec3f& target, const Vec3f& up);
 
 		template<typename U>
 		static inline Mat4 CreateTranslationMatrix(const Vec3<U>& translation);

@@ -1545,6 +1545,50 @@ namespace GALAXY::Math {
 		return out;
 	}
 
+	inline Mat4 Mat4::LookAtRH(const Vec3f& position, const Vec3f& target, const Vec3f& up)
+	{
+		const Vec3f f(Vec3f::Normalize(target - position));
+		const Vec3f s(Vec3f::Normalize(Vec3f::Cross(f, up)));
+		const Vec3f u(Vec3f::Cross(s, f));
+
+		Mat4 Result(1);
+		Result[0][0] = s.x;
+		Result[1][0] = s.y;
+		Result[2][0] = s.z;
+		Result[0][1] = u.x;
+		Result[1][1] = u.y;
+		Result[2][1] = u.z;
+		Result[0][2] =-f.x;
+		Result[1][2] =-f.y;
+		Result[2][2] =-f.z;
+		Result[3][0] =-Vec3f::Dot(s, position);
+		Result[3][1] =-Vec3f::Dot(u, position);
+		Result[3][2] = Vec3f::Dot(f, position);
+		return Result;
+	}
+
+	inline Mat4 Mat4::LookAtLH(const Vec3f& position, const Vec3f& target, const Vec3f& up)
+	{
+		const Vec3f f(Vec3f::Normalize(target - position));
+		const Vec3f s(Vec3f::Normalize(Vec3f::Cross(up, f)));
+		const Vec3f u(Vec3f::Cross(f, s));
+
+		Mat4 Result(1);
+		Result[0][0] = s.x;
+		Result[1][0] = s.y;
+		Result[2][0] = s.z;
+		Result[0][1] = u.x;
+		Result[1][1] = u.y;
+		Result[2][1] = u.z;
+		Result[0][2] = f.x;
+		Result[1][2] = f.y;
+		Result[2][2] = f.z;
+		Result[3][0] = -Vec3f::Dot(s, position);
+		Result[3][1] = -Vec3f::Dot(u, position);
+		Result[3][2] = -Vec3f::Dot(f, position);
+		return Result;
+	}
+
 	template<typename U>
 	inline Mat4 Mat4::CreateTranslationMatrix(const Vec3<U>& translation)
 	{

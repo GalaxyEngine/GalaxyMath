@@ -1,13 +1,11 @@
 #include "include/VTest.hpp"
 #define PCOMPARE(a, b) COMPARE_WITH_PRECISION(a, b, 1e-5f)
 
-#define GLM_ENABLE_EXPERIMENTAL
 #define MATH_GLM_EXTENSION
 #include "Maths.h"
 using namespace GALAXY::Math;
 
-#include <assert.h>
-
+#include <cassert>
 #include <glm/gtx/matrix_decompose.hpp>
 
 
@@ -151,7 +149,7 @@ VTEST(MATH_TEST)
 		{
 			constexpr Vec3f value(1.54f, 2.321f, 23.478f);
 			constexpr Vec3f value2(98.54f, 12.321f, 37.89f);
-			constexpr Vec3 lerpGLM(
+			const Vec3 lerpGLM(
 				glm::mix(value.x, value2.x, glm::clamp(0.5f, 0.0f, 1.0f)),
 				glm::mix(value.y, value2.y, glm::clamp(0.5f, 0.0f, 1.0f)),
 				glm::mix(value.z, value2.z, glm::clamp(0.5f, 0.0f, 1.0f))
@@ -496,6 +494,14 @@ VTEST(MATH_TEST)
 									   glm::scale(Vec3f(1, 1, -1).ToGlm());
 			glmViewMatrix = glm::inverse(glmViewMatrix);
 			REQUIRE(viewMatrix == glmViewMatrix);
+			
+			{
+				Vec3f target = Vec3f::Zero();
+				Vec3f pos(2, 2, 2);
+				Vec3f up(0, 1, 0);
+				REQUIRE(Mat4::LookAtRH(pos, target, up) == glm::lookAtRH(pos.ToGlm(), target.ToGlm(), up.ToGlm()));
+				REQUIRE(Mat4::LookAtLH(pos, target, up) == glm::lookAtLH(pos.ToGlm(), target.ToGlm(), up.ToGlm()));
+			}
 
 			// Orthographic matrix test
 			glm::mat4 glmOrtho = glm::ortho(-10.f, 10.f, -10.f, 10.f, 0.01f, 1000.f);
