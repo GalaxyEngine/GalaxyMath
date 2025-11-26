@@ -338,6 +338,7 @@ struct VTest
     std::function<void()> function;
     Entry entry;
 };
+std::vector<VTest> VTests = {}; //List of all tests
 
 void RegisterVTest(const char* name ,const std::function<void()>& function)
 {
