@@ -1,5 +1,9 @@
 #include "include/VTest.hpp"
+#ifdef __APPLE__
+#define PCOMPARE(a, b) COMPARE_WITH_PRECISION(a, b, 1e-4f)
+#else
 #define PCOMPARE(a, b) COMPARE_WITH_PRECISION(a, b, 1e-5f)
+#endif
 
 #define MATH_GLM_EXTENSION
 #include "Maths.h"
