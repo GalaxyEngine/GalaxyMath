@@ -1,4 +1,4 @@
-#include "include/VTest.hpp"
+#include "VTest/VTest.hpp"
 #ifdef __APPLE__
 #define PCOMPARE(a, b) COMPARE_WITH_PRECISION(a, b, 1e-4f)
 #else

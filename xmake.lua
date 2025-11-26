@@ -2,6 +2,7 @@ add_rules("mode.debug", "mode.release")
 add_rules("plugin.vsxmake.autoupdate")
 
 add_requires("glm")
+add_includedirs("external")
 
 target("GalaxyMath")
     set_languages("c++20")
