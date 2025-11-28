@@ -904,9 +904,9 @@ namespace GALAXY::Math {
 #pragma  region Mat3
 	inline constexpr Mat3::Mat3(float diagonal)
 	{
-		content[0][0] = 1;
-		content[1][1] = 1;
-		content[2][2] = 1;
+		content[0][0] = diagonal;
+		content[1][1] = diagonal;
+		content[2][2] = diagonal;
 	}
 
 	inline constexpr Mat3::Mat3(const Vec3f& m0, const Vec3f& m1, const Vec3f& m2)
@@ -1390,10 +1390,10 @@ namespace GALAXY::Math {
 #pragma  region Mat4
 	inline constexpr Mat4::Mat4(float diagonal)
 	{
-		content[0][0] = 1;
-		content[1][1] = 1;
-		content[2][2] = 1;
-		content[3][3] = 1;
+		content[0][0] = diagonal;
+		content[1][1] = diagonal;
+		content[2][2] = diagonal;
+		content[3][3] = diagonal;
 	}
 
 	inline constexpr Mat4::Mat4(const Vec4f& m0, const Vec4f& m1, const Vec4f& m2, const Vec4f& m3)
