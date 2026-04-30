@@ -706,7 +706,98 @@ namespace GALAXY::Math
 		inline bool operator==(const glm::quat& b) const { return AlmostEqual(x, b.x) && AlmostEqual(y, b.y) && AlmostEqual(z, b.z) && AlmostEqual(w, b.w); }
 #endif
 	};
+}
 
+namespace std
+{
+    // A small helper to combine hash values (based on boost::hash_combine)
+    namespace
+    {
+        template<typename T>
+        inline void hash_combine(size_t& seed, const T& v)
+        {
+            seed ^= std::hash<T>{}(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        }
+    }
+
+    template<typename T>
+    struct hash<GALAXY::Math::Vec2<T>>
+    {
+        size_t operator()(const GALAXY::Math::Vec2<T>& v) const noexcept
+        {
+            size_t seed = 0;
+            hash_combine(seed, v.x);
+            hash_combine(seed, v.y);
+            return seed;
+        }
+    };
+
+    template<typename T>
+    struct hash<GALAXY::Math::Vec3<T>>
+    {
+        size_t operator()(const GALAXY::Math::Vec3<T>& v) const noexcept
+        {
+            size_t seed = 0;
+            hash_combine(seed, v.x);
+            hash_combine(seed, v.y);
+            hash_combine(seed, v.z);
+            return seed;
+        }
+    };
+
+    template<typename T>
+    struct hash<GALAXY::Math::Vec4<T>>
+    {
+        size_t operator()(const GALAXY::Math::Vec4<T>& v) const noexcept
+        {
+            size_t seed = 0;
+            hash_combine(seed, v.x);
+            hash_combine(seed, v.y);
+            hash_combine(seed, v.z);
+            hash_combine(seed, v.w);
+            return seed;
+        }
+    };
+
+    template<>
+    struct hash<GALAXY::Math::Quat>
+    {
+        size_t operator()(const GALAXY::Math::Quat& q) const noexcept
+        {
+            size_t seed = 0;
+            hash_combine(seed, q.x);
+            hash_combine(seed, q.y);
+            hash_combine(seed, q.z);
+            hash_combine(seed, q.w);
+            return seed;
+        }
+    };
+
+    template<>
+    struct hash<GALAXY::Math::Mat3>
+    {
+        size_t operator()(const GALAXY::Math::Mat3& m) const noexcept
+        {
+            size_t seed = 0;
+            for (int i = 0; i < 3; ++i)
+                for (int j = 0; j < 3; ++j)
+                    hash_combine(seed, m.content[i][j]);
+            return seed;
+        }
+    };
+
+    template<>
+    struct hash<GALAXY::Math::Mat4>
+    {
+        size_t operator()(const GALAXY::Math::Mat4& m) const noexcept
+        {
+            size_t seed = 0;
+            for (int i = 0; i < 4; ++i)
+                for (int j = 0; j < 4; ++j)
+                    hash_combine(seed, m.content[i][j]);
+            return seed;
+        }
+    };
 }
 
 using namespace GALAXY::Math;
