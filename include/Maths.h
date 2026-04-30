@@ -803,12 +803,12 @@ namespace std
 using namespace GALAXY::Math;
 #ifdef IMGUI_IMPLEMENTATION
 #define IM_VEC2_CLASS_EXTRA                                                     \
-        constexpr ImVec2(const Math::Vec2f& f) : x(f.x), y(f.y) {}                   \
-        operator Math::Vec2f() const { return Math::Vec2f(x,y); }
+        constexpr ImVec2(const Vec2f& f) : x(f.x), y(f.y) {}                   \
+        operator Vec2f() const { return Vec2f(x,y); }
 
 #define IM_VEC4_CLASS_EXTRA                                                     \
-        constexpr ImVec4(const Math::Vec4f& f) : x(f.x), y(f.y), z(f.z), w(f.w) {}   \
-        operator Math::Vec4f() const { return Math::Vec4f(x,y,z,w); }
+        constexpr ImVec4(const Vec4f& f) : x(f.x), y(f.y), z(f.z), w(f.w) {}   \
+        operator Vec4f() const { return Vec4f(x,y,z,w); }
 #endif
 
 #include "Maths.inl"
